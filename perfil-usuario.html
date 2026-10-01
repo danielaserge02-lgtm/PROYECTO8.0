@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Perfil</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.hamburguesa{border:none;background:none;font-size:24px;cursor:pointer;}
+.logo{font-size:34px;font-weight:bold;font-style:italic;color:#0a4aa8;letter-spacing:1px;}
+.derecha{display:flex;align-items:center;gap:10px;}
+.campana{position:relative;font-size:20px;}
+.campana::after{content:"";position:absolute;top:0;right:-2px;width:8px;height:8px;background:#e23b3b;border-radius:50%;}
+.avatar{width:38px;height:38px;border-radius:50%;background:#f3c9b8;border:2px solid #d9d9d9;display:grid;place-items:center;font-size:22px;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;}
+.flecha{flex:none;font-size:20px;color:#222;}
+
+.perfil{display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer;}
+.foto{flex:none;width:76px;height:76px;border-radius:50%;background:#f3c9b8;display:grid;place-items:center;font-size:44px;}
+.perfil .info{flex:1;}
+.perfil h2{font-size:17px;color:#0d2c54;}
+.verificado{display:inline-flex;align-items:center;gap:5px;margin:5px 0;padding:3px 8px;border-radius:10px;background:#dcecff;color:#0a4aa8;font-size:10px;}
+.verificado i{display:grid;place-items:center;width:13px;height:13px;border-radius:50%;background:#1a73e8;color:#fff;font-size:8px;font-style:normal;}
+.calif{font-size:12px;color:#333;}
+.calif .e{color:#f7b500;}
+.calif small{color:#666;font-size:10px;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);padding:12px 4px;text-align:center;}
+.stat + .stat{border-left:1px solid #eee;}
+.stat .ic{width:26px;height:26px;margin:0 auto 5px;border-radius:50%;display:grid;place-items:center;font-size:13px;}
+.stat small{display:block;font-size:9px;color:#555;}
+.stat b{display:block;margin-top:4px;font-size:18px;color:#0d2c54;}
+.stat b.mes{font-size:12px;margin-top:7px;}
+.stat b span{color:#f7b500;font-size:14px;}
+
+.plus{display:flex;align-items:center;gap:10px;padding:12px;background:#e2ecfb;}
+.plus .corona{flex:none;width:38px;height:38px;border-radius:10px;background:#1a73e8;display:grid;place-items:center;font-size:20px;}
+.plus .texto{flex:1;}
+.plus b{display:block;font-size:13px;color:#0d2c54;}
+.plus small{display:block;margin-top:2px;font-size:9px;color:#444;line-height:1.3;}
+.plus button{flex:none;padding:7px 9px;border:1px solid #1a73e8;border-radius:14px;background:#fff;color:#1a73e8;font-size:9px;font-weight:bold;cursor:pointer;}
+
+h3.titulo{margin:14px 2px 8px;font-size:13px;color:#0d2c54;}
+.opcion{display:flex;align-items:center;gap:12px;padding:11px 12px;cursor:pointer;transition:.2s;}
+.opcion + .opcion{border-top:1px solid #f0f0f0;}
+.opcion:hover{background:#eef6fb;}
+.opcion:first-child{border-radius:14px 14px 0 0;}
+.opcion:last-child{border-radius:0 0 14px 14px;}
+.opcion .ico{flex:none;width:26px;text-align:center;font-size:19px;}
+.opcion .texto{flex:1;}
+.opcion b{display:block;font-size:12px;color:#111;}
+.opcion small{display:block;margin-top:2px;font-size:9px;color:#666;}
+.opcion.rojo b{color:#c0392b;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+
+/* Hoja inferior */
+.fondo{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.45);align-items:flex-end;}
+.fondo.abierto{display:flex;}
+.hoja{width:100%;max-height:92%;overflow-y:auto;padding:16px 16px 18px;background:#fff;border-radius:22px 22px 0 0;scrollbar-width:none;}
+.hoja::-webkit-scrollbar{display:none;}
+.hoja h4{font-size:15px;color:#0d2c54;margin-bottom:4px;}
+.hoja .desc{font-size:10px;color:#666;margin-bottom:12px;line-height:1.35;}
+label.campo{display:block;margin:10px 0 4px 2px;font-size:11px;font-weight:bold;color:#0d2c54;}
+.hoja input[type=text],.hoja input[type=tel],.hoja input[type=email],.hoja input[type=password]{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;font-size:13px;outline:none;}
+.hoja input:focus{border-color:#1a73e8;}
+.err{min-height:14px;margin-top:8px;font-size:11px;color:#c0392b;}
+.botones{display:flex;gap:8px;margin-top:14px;}
+.botones button{flex:1;padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;}
+.b1{background:#e8e8e8;color:#333;}
+.b2{background:#1a73e8;color:#fff;}
+.fila-op{display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:8px;border:1px solid #e3e3e3;border-radius:12px;cursor:pointer;}
+.fila-op.on{border-color:#1a73e8;background:#eef5ff;}
+.fila-op .ico{font-size:20px;}
+.fila-op b{flex:1;font-size:12px;color:#111;}
+.fila-op .radio{width:16px;height:16px;border:2px solid #aaa;border-radius:50%;}
+.fila-op.on .radio{border-color:#1a73e8;background:radial-gradient(#1a73e8 45%,#fff 50%);}
+.fila-sw{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;}
+.fila-sw:last-of-type{border-bottom:none;}
+.fila-sw .t{flex:1;}
+.fila-sw b{display:block;font-size:12px;color:#111;}
+.fila-sw small{font-size:9px;color:#666;}
+.sw{flex:none;width:44px;height:25px;border:none;border-radius:13px;background:#bbb;position:relative;cursor:pointer;transition:.3s;}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.3s;}
+.sw.on{background:#19b34a;}
+.sw.on::after{left:22px;}
+.beneficio{display:flex;gap:10px;align-items:center;padding:8px 0;font-size:12px;color:#222;}
+.beneficio span{font-size:18px;}
+.toast{position:absolute;left:50%;top:80px;transform:translateX(-50%);z-index:20;padding:8px 14px;border-radius:16px;background:#0d2c54;color:#fff;font-size:11px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.visible{opacity:1;}
+@media (max-width:480px){ .hoja input{font-size:16px !important;} }
+.hoja input[type=date]{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;font-size:13px;outline:none}.hoja .cambiar-f{display:inline-block;padding:8px 14px;border-radius:10px;background:#d6ecf9;color:#0a4aa8;font-size:11px;font-weight:bold;cursor:pointer;margin-bottom:4px}</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<button class="hamburguesa" aria-label="Menú">☰</button>
+<div class="logo">TÜK</div>
+<div class="derecha"><span class="campana">🔔</span><div class="avatar">👩</div></div>
+</div>
+
+<div class="scroll">
+
+<div class="tarjeta perfil" id="tarjetaPerfil">
+<div class="foto">👩</div>
+<div class="info">
+<h2 id="nombre">Valentina Rojas</h2><small id="uMail" style="display:block;font-size:10px;color:#666"></small>
+<div class="verificado"><i>✓</i>Usuario verificado</div>
+<div class="calif"><span class="e">★</span> 4.8 <small>· 24 viajes realizados</small></div>
+</div>
+<span class="flecha">›</span>
+</div>
+
+<div class="tarjeta stats">
+<div class="stat"><div class="ic" style="background:#dcecff;">🚗</div><small>Viajes realizados</small><b>24</b></div>
+<div class="stat"><div class="ic" style="background:#dff5e6;">⭐</div><small>Calificación promedio</small><b>4.8 <span>★</span></b></div>
+<div class="stat"><div class="ic" style="background:#ece3fb;">🕒</div><small>Miembro desde</small><b class="mes" id="uMiembro">—</b></div>
+</div>
+
+<div class="tarjeta plus">
+<div class="corona">👑</div>
+<div class="texto"><b>TÜK Plus</b><small>Accede a beneficios exclusivos y promociones especiales.</small></div>
+<button id="plus">Conocer más</button>
+</div>
+
+<h3 class="titulo">Mi cuenta</h3>
+<div class="tarjeta">
+<div class="opcion" data-o="info"><span class="ico">👤</span><span class="texto"><b>Información personal</b><small>Actualiza tus datos personales</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="pagos"><span class="ico">💳</span><span class="texto"><b>Métodos de pago</b><small>Administra tus formas de pago</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="seguridad"><span class="ico">🛡️</span><span class="texto"><b>Seguridad</b><small>Cambia tu contraseña y más</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="notif"><span class="ico">🔔</span><span class="texto"><b>Notificaciones</b><small>Configura tus preferencias</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="ayuda"><span class="ico">❓</span><span class="texto"><b>Ayuda</b><small>Centro de ayuda y soporte</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="lugares"><span class="ico">📍</span><span class="texto"><b>Emergencia y lugares</b><small>Contacto de emergencia, casa y trabajo</small></span><span class="flecha">›</span></div>
+<div class="opcion" data-o="config"><span class="ico">⚙️</span><span class="texto"><b>Configuración</b><small>Idioma y preferencias de la app.</small></span><span class="flecha">›</span></div>
+<div class="opcion rojo" data-o="salir"><span class="ico">🚪</span><span class="texto"><b>Cerrar sesión</b><small>Salir de tu cuenta</small></span><span class="flecha">›</span></div>
+</div>
+
+</div>
+
+<nav class="menu">
+<a href="usuario.html"><span class="ico">🏠</span>Inicio</a>
+<a href="comentarios.html"><span class="ico">⭐</span>Comentarios</a>
+<a href="mensajes-usuario.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil-usuario.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+<div class="fondo" id="fondo"><div class="hoja" id="hoja"></div></div>
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+
+/* ---------- Datos guardados en el navegador ---------- */
+const BASE = { nombre:"Valentina Rojas", celular:"", correo:"", pago:"efectivo",
+  notif:{ viaje:true, mensajes:true, promos:false, calificar:true } };
+let u = JSON.parse(JSON.stringify(BASE));
+try { var g = JSON.parse(localStorage.getItem("tuk_usuario") || "{}"); u = Object.assign(u, g); u.notif = Object.assign({}, BASE.notif, g.notif); } catch(e){}
+var _c=TUK.cuenta()||{}; u.nombre=_c.nombre||u.nombre; u.celular=_c.telefono||""; u.correo=_c.correo||"";
+function guardar(){ try { localStorage.setItem("tuk_usuario", JSON.stringify(u)); } catch(e){} }
+
+const nombreEl = document.getElementById("nombre");
+nombreEl.textContent = u.nombre;
+
+const fondo = document.getElementById("fondo"), hoja = document.getElementById("hoja");
+function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function aviso(t){
+  var el = document.getElementById("toast"); el.textContent = t; el.classList.add("visible");
+  setTimeout(function(){ el.classList.remove("visible"); }, 1800);
+}
+function abrir(html){ hoja.innerHTML = html; fondo.classList.add("abierto"); }
+function cerrar(){ fondo.classList.remove("abierto"); }
+fondo.addEventListener("click", function(e){ if (e.target === fondo) cerrar(); });
+hoja.addEventListener("click", function(e){ if (e.target.dataset.cerrar !== undefined) cerrar(); });
+
+/* ---------- Opciones ---------- */
+function infoPersonal(){
+  abrir('<h4>Información personal</h4><p class="desc">Actualiza tus datos. Se guardan en este dispositivo.</p>' +
+    '<label class="cambiar-f">📷 Cambiar foto<input type="file" id="fFoto" accept="image/*" hidden></label>' +
+    '<label class="campo" for="fNombre">Nombre completo</label><input type="text" id="fNombre" maxlength="40" value="' + esc(u.nombre) + '">' +
+    '<label class="campo" for="fCel">Celular</label><input type="tel" id="fCel" maxlength="15" value="' + esc(u.celular) + '" placeholder="Ej: 3101234567">' +
+    '<label class="campo" for="fCorreo">Correo electrónico</label><input type="email" id="fCorreo" maxlength="60" value="' + esc(u.correo) + '" placeholder="tucorreo@ejemplo.com">' +
+    '<label class="campo" for="fNac">Fecha de nacimiento</label><input type="date" id="fNac" value="' + esc((TUK.cuenta()||{}).fecha||"") + '">' +
+    '<label class="campo" for="fCiu">Ciudad</label><input type="text" id="fCiu" maxlength="40" value="' + esc((TUK.cuenta()||{}).ciudad||"") + '" placeholder="Ej: San Alberto">' +
+    '<div class="err" id="err"></div>' +
+    '<div class="botones"><button class="b1" data-cerrar>Cancelar</button><button class="b2" id="ok">Guardar</button></div>');
+  document.getElementById("ok").addEventListener("click", function(){
+    var n = document.getElementById("fNombre").value.trim(), c = document.getElementById("fCorreo").value.trim();
+    var err = document.getElementById("err");
+    if (!n) { err.textContent = "El nombre no puede estar vacío."; return; }
+    if (c && !/^\S+@\S+\.\S+$/.test(c)) { err.textContent = "Escribe un correo válido."; return; }
+    u.nombre = n; u.celular = document.getElementById("fCel").value.trim(); u.correo = c;
+    var cc=TUK.cuenta()||{}; cc.nombre=n; cc.telefono=u.celular; if(c) cc.correo=c.toLowerCase(); cc.fecha=document.getElementById("fNac").value; cc.ciudad=document.getElementById("fCiu").value.trim(); TUK.guardar(cc); guardar(); nombreEl.textContent = n; fillU(); cerrar(); aviso("Datos guardados ✓");
+  });
+}
+
+function pagos(){
+  var op = [["efectivo","💵","Efectivo"],["nequi","📱","Nequi"],["daviplata","📲","Daviplata"],["tarjeta","💳","Tarjeta"]];
+  abrir('<h4>Métodos de pago</h4><p class="desc">Elige cómo prefieres pagar tus viajes.</p>' +
+    op.map(function(o){ return '<div class="fila-op' + (u.pago === o[0] ? " on" : "") + '" data-p="' + o[0] + '"><span class="ico">' + o[1] + '</span><b>' + o[2] + '</b><span class="radio"></span></div>'; }).join("") +
+    '<div class="botones"><button class="b1" data-cerrar>Cancelar</button><button class="b2" id="ok">Guardar</button></div>');
+  var sel = u.pago;
+  hoja.querySelectorAll(".fila-op").forEach(function(f){
+    f.addEventListener("click", function(){
+      sel = f.dataset.p; hoja.querySelectorAll(".fila-op").forEach(function(x){ x.classList.toggle("on", x === f); });
+    });
+  });
+  document.getElementById("ok").addEventListener("click", function(){ u.pago = sel; guardar(); cerrar(); aviso("Método de pago guardado ✓"); });
+}
+
+function seguridad(){
+  abrir('<h4>Seguridad</h4><p class="desc">Cambia tu contraseña. Usa mínimo 6 caracteres.</p>' +
+    '<label class="campo" for="p1">Contraseña actual</label><input type="password" id="p1" autocomplete="off">' +
+    '<label class="campo" for="p2">Nueva contraseña</label><input type="password" id="p2" autocomplete="off">' +
+    '<label class="campo" for="p3">Confirmar nueva contraseña</label><input type="password" id="p3" autocomplete="off">' +
+    '<div class="err" id="err"></div>' +
+    '<div class="botones"><button class="b1" data-cerrar>Cancelar</button><button class="b2" id="ok">Actualizar</button></div>');
+  document.getElementById("ok").addEventListener("click", function(){
+    var a = document.getElementById("p1").value, b = document.getElementById("p2").value, c = document.getElementById("p3").value, err = document.getElementById("err");
+    if (!a) { err.textContent = "Escribe tu contraseña actual."; return; }
+    if (b.length < 6) { err.textContent = "La nueva contraseña debe tener mínimo 6 caracteres."; return; }
+    if (b !== c) { err.textContent = "Las contraseñas no coinciden."; return; }
+    var cu=TUK.cuenta()||{}; if(a!==cu.contrasena){ err.textContent=TUK.t("La contraseña actual no es correcta."); return; } cu.contrasena=b; TUK.guardar(cu); cerrar(); aviso("Contraseña actualizada ✓");
+  });
+}
+
+function notificaciones(){ u.notif.promos=TUK.cfg().promos; u.notif.mensajes=TUK.cfg().mensajes;
+  var op = [["viaje","Estado del viaje","Aviso cuando tu conductor llega"],["mensajes","Mensajes","Mensajes de conductores y soporte"],
+            ["promos","Promociones TÜK","Ofertas y novedades"],["calificar","Recordatorio para calificar","Cuando tengas viajes por calificar"]];
+  abrir('<h4>Notificaciones</h4><p class="desc">Elige qué avisos quieres recibir.</p>' +
+    op.map(function(o){ return '<div class="fila-sw"><div class="t"><b>' + o[1] + '</b><small>' + o[2] + '</small></div><button class="sw' + (u.notif[o[0]] ? " on" : "") + '" data-k="' + o[0] + '"></button></div>'; }).join("") +
+    '<div class="botones"><button class="b2" data-cerrar>Listo</button></div>');
+  hoja.querySelectorAll(".sw").forEach(function(s){
+    s.addEventListener("click", function(){ u.notif[s.dataset.k] = !u.notif[s.dataset.k]; if(s.dataset.k==="promos"||s.dataset.k==="mensajes") TUK.setCfg(s.dataset.k,u.notif[s.dataset.k]); s.classList.toggle("on", u.notif[s.dataset.k]); guardar(); });
+  });
+}
+
+function tukPlus(){
+  abrir('<h4>👑 TÜK Plus</h4><p class="desc">Beneficios pensados para quienes viajan seguido.</p>' +
+    '<div class="beneficio"><span>🏷️</span>Descuentos en tus viajes</div>' +
+    '<div class="beneficio"><span>⚡</span>Prioridad al buscar conductor</div>' +
+    '<div class="beneficio"><span>🎁</span>Promociones exclusivas</div>' +
+    '<div class="beneficio"><span>🎧</span>Soporte prioritario</div>' +
+    '<div class="botones"><button class="b1" data-cerrar>Cerrar</button><button class="b2" id="ok">Avísame cuando esté</button></div>');
+  document.getElementById("ok").addEventListener("click", function(){ cerrar(); aviso("¡Te avisaremos! 👑"); });
+}
+
+var $=function(i){return document.getElementById(i)};
+hoja.addEventListener("change",function(e){if(e.target.id!=="fFoto"||!e.target.files.length)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var l=Math.min(im.width,im.height),c=document.createElement("canvas");c.width=c.height=320;c.getContext("2d").drawImage(im,(im.width-l)/2,(im.height-l)/2,l,l,0,0,320,320);u.foto=c.toDataURL("image/jpeg",.8);guardar();TUK.fotos();aviso("Foto actualizada ✓")};im.src=r.result};r.readAsDataURL(e.target.files[0])});
+function fillU(){var c=TUK.cuenta()||{};$("uMail").textContent=[c.correo,c.telefono].filter(Boolean).join(" · ");$("uMiembro").textContent=c.creada?new Date(c.creada+"T12:00:00").toLocaleDateString(TUK.cfg().idioma==="en"?"en-US":"es-CO",{month:"long",year:"numeric"}):"—"}
+fillU();
+function lugares(){var c=TUK.cuenta()||{};abrir('<h4>Emergencia y lugares</h4><p class="desc">El botón de emergencia envía tu ubicación a este contacto.</p>'+
+ [["lN","Contacto de emergencia","emerNombre","Nombre"],["lT","Teléfono del contacto","emerTel","3101234567"],["lC","Casa","casa","Dirección"],["lW","Trabajo","trabajo","Dirección"]].map(function(o){return '<label class="campo" for="'+o[0]+'">'+o[1]+'</label><input type="text" id="'+o[0]+'" maxlength="60" value="'+esc(c[o[2]]||"")+'" placeholder="'+o[3]+'">'}).join("")+
+ '<div class="botones"><button class="b1" data-cerrar>Cancelar</button><button class="b2" id="ok">Guardar</button></div>');
+ $("ok").onclick=function(){var d=TUK.cuenta()||{};d.emerNombre=$("lN").value.trim();d.emerTel=$("lT").value.trim();d.casa=$("lC").value.trim();d.trabajo=$("lW").value.trim();TUK.guardar(d);cerrar();aviso("Datos guardados ✓")}}
+function configuracion(){var c=TUK.cfg();abrir('<h4>Configuración</h4><p class="desc">Idioma y preferencias de la app.</p><div class="fila-sw"><div class="t"><b>Idioma</b><small>Idioma de la aplicación</small></div><select id="sI"><option value="es">Español</option><option value="en">English</option></select></div>'+
+ [["ahorro","Ahorro de datos","Oculta el mapa y reduce el consumo"],["sonido","Sonido de alertas","Sonido al recibir mensajes"]].map(function(o){return '<div class="fila-sw"><div class="t"><b>'+o[1]+'</b><small>'+o[2]+'</small></div><button class="sw'+(c[o[0]]?" on":"")+'" data-c="'+o[0]+'"></button></div>'}).join("")+
+ '<div class="botones"><button class="b2" data-cerrar>Listo</button></div>');
+ var s=$("sI");s.value=c.idioma;s.onchange=function(){TUK.setCfg("idioma",s.value);location.reload()};
+ hoja.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){var v=!TUK.cfg()[b.dataset.c];TUK.setCfg(b.dataset.c,v);b.classList.toggle("on",v);if(v&&b.dataset.c==="sonido")TUK.beep()}})}
+document.querySelectorAll(".opcion").forEach(function(o){
+  o.addEventListener("click", function(){
+    var k = o.dataset.o;
+    if (k === "info") infoPersonal();
+    else if (k === "pagos") pagos();
+    else if (k === "seguridad") seguridad();
+    else if (k === "notif") notificaciones(); else if (k === "lugares") lugares(); else if (k === "config") configuracion();
+    else if (k === "ayuda") window.location.href = "mensajes-usuario.html#chat-2";   // chat con Soporte TÜK
+    else if (k === "salir") {
+      abrir('<h4>Cerrar sesión</h4><p class="desc">¿Seguro que quieres salir de tu cuenta?</p>' +
+        '<div class="botones"><button class="b1" data-cerrar>Cancelar</button><button class="b2" id="ok" style="background:#e23b3b;">Cerrar sesión</button></div>');
+      document.getElementById("ok").addEventListener("click", function(){ localStorage.removeItem("tuk_sesion"); window.location.replace("index.html"); });   // cambia por tu pantalla de selección de rol
+    }
+  });
+});
+document.getElementById("tarjetaPerfil").addEventListener("click", infoPersonal);
+document.getElementById("plus").addEventListener("click", tukPlus);
+
+</script>
+
+<script>
+// Globo rojo del menú: conversaciones con mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats_usuario"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){ if (n > 0) { b.textContent = n; } else { b.remove(); } });
+  window.addEventListener("pageshow", function(e){ if (e.persisted) location.reload(); });
+})();
+</script>
+
+</body>
+</html>

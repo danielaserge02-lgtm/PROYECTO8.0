@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<script src="tuk.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+
+<title>Perfil</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+height:100dvh;
+background:#52c6f4;
+}
+
+.telefono{
+width:330px;
+height:min(700px,96vh);
+height:min(700px,96dvh);
+background:#f3f6f9;
+border-radius:30px;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+display:flex;
+flex-direction:column;
+}
+
+/* Cabecera */
+
+.cabecera{
+position:relative;
+z-index:2;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 14px 10px;
+background:#fff;
+box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.hamburguesa{ border:none; background:none; font-size:24px; cursor:pointer; }
+
+.logo{
+font-size:34px;
+font-weight:bold;
+font-style:italic;
+color:#0a4aa8;
+letter-spacing:1px;
+}
+
+.derecha{ display:flex; align-items:center; gap:10px; }
+
+.campana{ position:relative; font-size:20px; }
+
+.campana::after{
+content:"";
+position:absolute;
+top:0;
+right:-2px;
+width:8px;
+height:8px;
+background:#e23b3b;
+border-radius:50%;
+}
+
+.avatar{
+width:38px;
+height:38px;
+border-radius:50%;
+background:#f7c531;
+border:2px solid #0a4aa8;
+display:grid;
+place-items:center;
+font-size:20px;
+overflow:hidden;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* Contenido */
+
+.scroll{
+flex:1;
+overflow-y:auto;
+padding:12px;
+scrollbar-width:none;
+}
+
+.scroll::-webkit-scrollbar{ display:none; }
+
+.tarjeta{
+background:#fff;
+border-radius:14px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+margin-bottom:10px;
+}
+
+.flecha{ flex:none; font-size:20px; color:#555; }
+
+/* Perfil */
+
+.perfil{ padding:12px; cursor:pointer; }
+
+.perfil-fila{ display:flex; align-items:center; gap:12px; }
+
+.foto-grande{
+position:relative;
+flex:none;
+width:70px;
+height:70px;
+border-radius:50%;
+background:#f7c531;
+border:3px solid #0a4aa8;
+display:grid;
+place-items:center;
+font-size:38px;
+}
+
+.foto-grande img{
+width:100%;
+height:100%;
+border-radius:50%;
+object-fit:cover;
+}
+
+.foto-grande .punto{
+position:absolute;
+right:2px;
+bottom:2px;
+width:13px;
+height:13px;
+border-radius:50%;
+background:#19b34a;
+border:2px solid #fff;
+}
+
+.perfil-info{ flex:1; }
+.perfil-info h2{ font-size:17px; color:#0d2c54; }
+.perfil-info .rol{ margin:2px 0 6px; font-size:10px; color:#555; }
+
+.estado{
+display:inline-block;
+padding:3px 8px;
+border-radius:10px;
+background:#dff5e6;
+color:#0a7a3a;
+font-size:10px;
+}
+
+.resumen{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+margin-top:12px;
+padding-top:10px;
+border-top:1px solid #eee;
+text-align:center;
+}
+
+.resumen div + div{ border-left:1px solid #eee; }
+.resumen .valor{ font-size:15px; font-weight:bold; color:#0d2c54; }
+.resumen .etiqueta{ margin-top:3px; font-size:9px; color:#555; }
+
+/* Vehículo */
+
+.vehiculo{ padding:12px; cursor:pointer; }
+.vehiculo .titulo{ font-size:12px; font-weight:bold; color:#0a4aa8; margin-bottom:6px; }
+
+.vehiculo-fila{ display:flex; align-items:center; gap:10px; }
+
+.vehiculo .imagen{
+flex:none;
+width:84px;
+height:64px;
+border-radius:10px;
+background:#e3eef6;
+display:grid;
+place-items:center;
+font-size:42px;
+}
+
+.vehiculo .info{ flex:1; }
+.vehiculo .info h3{ font-size:14px; color:#111; }
+
+.etiquetas{ display:flex; align-items:center; gap:6px; margin:5px 0; flex-wrap:wrap; }
+
+.color{
+padding:2px 8px;
+border-radius:6px;
+background:#e8e8e8;
+font-size:9px;
+}
+
+.placa{
+display:inline-block;
+padding:3px 8px;
+border:1px solid #ddd;
+border-radius:6px;
+font-size:11px;
+font-weight:bold;
+}
+
+.modelo{ font-size:10px; color:#555; }
+
+/* Opciones */
+
+.opcion{
+display:flex;
+align-items:center;
+gap:10px;
+padding:9px 12px;
+cursor:pointer;
+transition:.3s;
+}
+
+.opcion + .opcion{ border-top:1px solid #f0f0f0; }
+.opcion:hover{ background:#eef6fb; }
+.opcion:first-child{ border-radius:14px 14px 0 0; }
+.opcion:last-child{ border-radius:0 0 14px 14px; }
+
+.opcion .icono{
+flex:none;
+width:26px;
+height:26px;
+border-radius:8px;
+display:grid;
+place-items:center;
+font-size:13px;
+color:#fff;
+}
+
+.opcion .texto{ flex:1; }
+.opcion b{ display:block; font-size:12px; color:#111; }
+.opcion small{ font-size:9px; color:#666; }
+
+.estado.off{ background:#e6e6e6; color:#666; }
+.foto-grande .punto.off{ background:#999; }
+.vehiculo .imagen{ overflow:hidden; }
+.vehiculo .imagen img{ width:100%; height:100%; object-fit:cover; }
+
+.desc{ margin-top:10px; font-size:10px; color:#555; line-height:1.35; }
+
+/* Ayuda */
+
+.ayuda{
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px 12px;
+}
+
+.ayuda .icono{ font-size:26px; }
+.ayuda .texto{ flex:1; }
+.ayuda b{ display:block; font-size:12px; color:#0d2c54; }
+.ayuda small{ font-size:9px; color:#555; }
+
+.ayuda button{
+padding:7px 8px;
+border:none;
+border-radius:8px;
+background:#d6ecf9;
+color:#0a4aa8;
+font-size:9px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.ayuda button:hover{ background:#bfe0f3; }
+
+/* Menú inferior */
+
+.menu{
+position:relative;
+z-index:2;
+display:flex;
+justify-content:space-around;
+padding:8px 0 10px;
+background:#fff;
+box-shadow:0 -2px 10px rgba(0,0,0,.1);
+}
+
+.menu a{
+position:relative;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:2px;
+font-size:10px;
+color:#555;
+text-decoration:none;
+}
+
+.menu a .ico{ font-size:20px; }
+.menu a.activo{ color:#1a73e8; font-weight:bold; }
+
+.menu .badge{
+position:absolute;
+top:-4px;
+right:-2px;
+min-width:15px;
+height:15px;
+padding:0 4px;
+border-radius:8px;
+background:#e23b3b;
+color:#fff;
+font-size:9px;
+display:grid;
+place-items:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<button class="hamburguesa" aria-label="Menú">☰</button>
+<div class="logo">TÜK</div>
+<div class="derecha">
+<span class="campana">🔔</span>
+<div class="avatar">👤</div>
+</div>
+</div>
+
+<div class="scroll">
+
+<!-- Datos del conductor -->
+<div class="tarjeta perfil" data-ir="editar-perfil.html">
+<div class="perfil-fila">
+<div class="foto-grande">👤<span class="punto" id="puntoPerfil"></span></div>
+<div class="perfil-info">
+<h2 data-nombre>Carlos Andrés</h2>
+<p class="rol" id="rolPerfil">Conductor activo</p>
+<span class="estado" id="estadoPerfil">● En línea</span>
+</div>
+<span class="flecha">›</span>
+</div>
+
+<div class="resumen">
+<div><div class="valor">⭐ 4.8</div><div class="etiqueta">Calificación</div></div>
+<div><div class="valor">🏍 62</div><div class="etiqueta">Viajes</div></div>
+<div><div class="valor">💵 $352.000</div><div class="etiqueta">Ganancias totales</div></div>
+</div>
+</div>
+
+<!-- Vehículo -->
+<div class="tarjeta vehiculo" data-ir="documentos.html">
+<div class="titulo">🏍 Mi vehículo</div>
+<div class="vehiculo-fila">
+<div class="imagen" id="imgMoto">🛺</div>
+<div class="info">
+<h3 id="vMod">—</h3>
+<div class="etiquetas">
+<span class="color" id="vCol">—</span>
+</div>
+<span class="placa">🟨 <span id="vPla">—</span></span>
+<div class="modelo" style="margin-top:5px;">Modelo <span id="vAnio">—</span></div>
+</div>
+<span class="flecha">›</span>
+</div>
+</div>
+
+<!-- Opciones -->
+<div class="tarjeta">
+<div class="opcion" data-ir="informacion.html">
+<span class="icono" style="background:#1a73e8;">👤</span>
+<span class="texto"><b>Información personal</b><small>Datos de tu cuenta y documentos</small></span>
+<span class="flecha">›</span>
+</div>
+<div class="opcion" data-ir="documentos.html">
+<span class="icono" style="background:#1a73e8;">📄</span>
+<span class="texto"><b>Mis documentos</b><small>Licencia, SOAT y otros documentos</small></span>
+<span class="flecha">›</span>
+</div>
+<div class="opcion" data-ir="estadisticas.html">
+<span class="icono" style="background:#7b3fe4;">📊</span>
+<span class="texto"><b>Estadísticas</b><small>Tu rendimiento y actividad</small></span>
+<span class="flecha">›</span>
+</div>
+<div class="opcion" data-ir="calificaciones.html">
+<span class="icono" style="background:#f7b500;">★</span>
+<span class="texto"><b>Calificaciones</b><small>Revisa tus calificaciones y comentarios</small></span>
+<span class="flecha">›</span>
+</div>
+<div class="opcion" data-ir="configuracion.html">
+<span class="icono" style="background:#1a73e8;">⚙</span>
+<span class="texto"><b>Configuración</b><small>Notificaciones, idioma y más</small></span>
+<span class="flecha">›</span>
+</div>
+<div class="opcion" id="cerrar">
+<span class="icono" style="background:#e23b3b;">⎋</span>
+<span class="texto"><b>Cerrar sesión</b><small>Salir de tu cuenta</small></span>
+<span class="flecha">›</span>
+</div>
+</div>
+
+<!-- Ayuda -->
+<div class="tarjeta ayuda">
+<span class="icono">🎧</span>
+<span class="texto"><b>¿Necesitas ayuda?</b><small>Contáctanos, estamos para ayudarte</small></span>
+<button id="soporte">Contactar soporte</button>
+</div>
+
+</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+</div>
+
+<script>
+
+document.querySelectorAll("[data-aviso]").forEach(function(el){
+  el.addEventListener("click", function(){
+    alert(el.dataset.aviso);
+  });
+});
+
+// Opciones que abren otra pantalla
+document.querySelectorAll("[data-ir]").forEach(function(el){
+  el.addEventListener("click", function(){ window.location.href = el.dataset.ir; });
+});
+
+// Estado en línea / desconectado (se guarda desde la pantalla de inicio)
+try {
+  if (localStorage.getItem("tuk_enlinea") === "0") {
+    const e = document.getElementById("estadoPerfil");
+    e.textContent = "● Desconectado";
+    e.classList.add("off");
+    document.getElementById("puntoPerfil").classList.add("off");
+    document.getElementById("rolPerfil").textContent = "Conductor desconectado";
+  }
+  // Foto del mototaxi subida en el registro
+  const docs = JSON.parse(localStorage.getItem("tuk_docs") || "{}");
+  if (docs.moto) {
+    document.getElementById("imgMoto").innerHTML = '<img src="' + docs.moto + '" alt="Mototaxi">';
+  }
+} catch(e){}
+
+// "Contactar soporte" abre la conversación con Soporte TÜK
+document.getElementById("soporte").addEventListener("click", function(){
+  window.location.href = "chat.html?id=2";
+});
+
+// Cerrar sesión: vuelve a la pantalla de selección de rol (sin poder regresar)
+document.getElementById("cerrar").addEventListener("click", function(){
+  if (confirm(TUK.t("¿Seguro que quieres cerrar sesión?"))) {
+    localStorage.removeItem("tuk_sesion"); window.location.replace("index.html");   // cambia por el nombre de tu pantalla de rol
+  }
+});
+
+</script>
+
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+<script>
+var v={};try{v=JSON.parse(localStorage.getItem("tuk_vehiculo")||"{}")}catch(e){}
+[["vMod","modelo"],["vCol","color"],["vPla","placa"],["vAnio","anio"]].forEach(function(p){document.getElementById(p[0]).textContent=v[p[1]]||(p[1]==="modelo"?TUK.t("Sin registrar"):"—")});
+</script>
+</body>
+
+</html>

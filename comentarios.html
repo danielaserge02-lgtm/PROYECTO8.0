@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Comentarios</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{font-size:24px;color:#111;text-decoration:none;line-height:1;}
+.logo{flex:1;font-size:34px;font-weight:bold;font-style:italic;color:#0a4aa8;letter-spacing:1px;}
+.derecha{display:flex;align-items:center;gap:10px;}
+.campana{position:relative;font-size:20px;}
+.campana::after{content:"";position:absolute;top:0;right:-2px;width:8px;height:8px;background:#e23b3b;border-radius:50%;}
+.avatar{width:38px;height:38px;border-radius:50%;background:#f3c9b8;border:2px solid #d9d9d9;display:grid;place-items:center;font-size:22px;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+h1{font-size:22px;color:#0d2c54;}
+.sub{margin:2px 0 12px;font-size:10px;color:#555;}
+h2{font-size:12px;color:#0d2c54;}
+
+.banner{display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:12px;border-radius:14px;background:#ece6fb;}
+.banner .ib{flex:none;width:36px;height:36px;border-radius:10px;background:#7b3fe4;color:#fff;display:grid;place-items:center;font-size:18px;}
+.banner b{display:block;font-size:12px;color:#2d1b69;}
+.banner small{display:block;margin-top:3px;font-size:9px;color:#5a4a8a;line-height:1.3;}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px;}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:10px;font-weight:bold;color:#222;cursor:pointer;}
+.tab .n{min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#e3e3e3;color:#444;font-size:9px;display:grid;place-items:center;}
+.tab.activo{background:#0a2f8f;border-color:#0a2f8f;color:#fff;}
+.tab.activo .n{background:#fff;color:#0a2f8f;}
+
+.titulo-fila{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;}
+.titulo-fila a{font-size:10px;color:#1a5be0;font-weight:bold;cursor:pointer;}
+.sec{margin-bottom:8px;}
+
+.viaje{padding:10px 12px;margin-bottom:8px;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;transition:.2s;}
+.viaje:hover{background:#f1f8fc;}
+.fila{display:flex;align-items:center;gap:10px;}
+.av{flex:none;width:40px;height:40px;border-radius:50%;background:#e3eef6;display:grid;place-items:center;font-size:22px;overflow:hidden;}
+.av img{width:100%;height:100%;object-fit:cover;}
+.info{flex:1;min-width:0;}
+.info b{display:block;font-size:13px;color:#111;}
+.info small{display:block;margin-top:2px;font-size:9px;color:#555;}
+.flecha{flex:none;font-size:20px;color:#222;}
+.estrellas{display:flex;justify-content:space-between;padding:10px 8px 2px 8px;}
+.est{border:none;background:none;cursor:pointer;line-height:0;}
+.est svg{width:26px;height:26px;}
+
+.hist{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;}
+.hist:hover{background:#f1f8fc;}
+.hist .punt{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:bold;color:#222;}
+.hist .punt svg{width:12px;height:12px;}
+.vacio{padding:18px;text-align:center;font-size:12px;color:#666;background:#fff;border-radius:14px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+
+/* Hoja para calificar */
+.fondo{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.45);align-items:flex-end;}
+.fondo.abierto{display:flex;}
+.hoja{width:100%;max-height:92%;overflow-y:auto;padding:16px 16px 18px;background:#fff;border-radius:22px 22px 0 0;scrollbar-width:none;}
+.hoja::-webkit-scrollbar{display:none;}
+.hoja-cab{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.hoja-cab b{display:block;font-size:14px;color:#0d2c54;}
+.hoja-cab small{font-size:9px;color:#666;}
+.grandes{display:flex;justify-content:center;gap:8px;margin:6px 0 4px;}
+.grandes .est svg{width:38px;height:38px;}
+.etq{text-align:center;min-height:16px;margin-bottom:10px;font-size:12px;font-weight:bold;color:#0a4aa8;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{padding:6px 10px;border:1px solid #ddd;border-radius:14px;background:#fff;font-size:10px;cursor:pointer;}
+.chip.on{background:#0a2f8f;border-color:#0a2f8f;color:#fff;}
+textarea{width:100%;height:80px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;font-size:13px;resize:none;outline:none;line-height:1.35;}
+textarea:focus{border-color:#1a73e8;}
+.cont{margin:3px 2px 12px;text-align:right;font-size:9px;color:#888;}
+.leido{margin-bottom:12px;padding:10px 12px;border-radius:10px;background:#f3f6f9;font-size:12px;color:#333;line-height:1.35;}
+.botones{display:flex;gap:8px;}
+.botones button{flex:1;padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;}
+.sec2{background:#e8e8e8;color:#333;}
+.prim{background:#1a73e8;color:#fff;}
+.prim:disabled{background:#a9c8f2;cursor:not-allowed;}
+.toast{position:absolute;left:50%;top:80px;transform:translateX(-50%);z-index:20;padding:8px 14px;border-radius:16px;background:#0d2c54;color:#fff;font-size:11px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.visible{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="usuario.html" aria-label="Volver">←</a>
+<div class="logo">TÜK</div>
+<div class="derecha"><span class="campana">🔔</span><div class="avatar">👩</div></div>
+</div>
+
+<div class="scroll">
+<h1>Comentarios</h1>
+<p class="sub">Califica tu experiencia con los conductores</p>
+
+<div class="banner">
+<div class="ib">★</div>
+<div><b>Tu opinión nos ayuda a mejorar</b><small>Califica tus viajes y ayuda a otros pasajeros a elegir mejor.</small></div>
+</div>
+
+<div class="tabs">
+<button class="tab activo" data-t="pend">Por calificar <span class="n" id="nPend">0</span></button>
+<button class="tab" data-t="hist">Historial de calificaciones <span class="n" id="nHist">0</span></button>
+</div>
+
+<div id="vistaPend">
+<h2 class="sec">Califica tus últimos viajes</h2>
+<div id="listaPend"></div>
+<div class="titulo-fila"><h2>Historial de calificaciones</h2><a id="verTodas">Ver todas</a></div>
+<div id="prevHist"></div>
+</div>
+
+<div id="vistaHist" style="display:none;">
+<h2 class="sec">Historial de calificaciones</h2>
+<div id="listaHist"></div>
+</div>
+</div>
+
+<nav class="menu">
+<a href="usuario.html"><span class="ico">🏠</span>Inicio</a>
+<a href="comentarios.html" class="activo"><span class="ico">⭐</span>Comentarios</a>
+<a href="mensajes-usuario.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil-usuario.html"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+<div class="fondo" id="fondo">
+<div class="hoja">
+<div class="hoja-cab"><div class="av" id="hAv"></div><div><b id="hNombre"></b><small id="hViaje"></small></div></div>
+<div class="grandes" id="grandes"></div>
+<div class="etq" id="etq"></div>
+<div id="bloqueEscribir">
+<div class="chips" id="chips"></div>
+<textarea id="coment" maxlength="200" placeholder="Escribe un comentario (opcional)"></textarea>
+<div class="cont" id="cont">0/200</div>
+</div>
+<div id="bloqueLeer" style="display:none;"></div>
+<div class="botones">
+<button class="sec2" id="cancelar">Cancelar</button>
+<button class="prim" id="enviar" disabled>Enviar calificación</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+
+/* ---------- Datos de ejemplo ---------- */
+const VIAJES = [
+  { id:"v1", conductor:"Carlos Andrés",  icono:"@conductor",  fecha:"12 may, 2025", hora:"8:45 a.m.", ruta:"San Alberto Centro - Barrio Briaas" },
+  { id:"v2", conductor:"María Fernanda", icono:"👩",  fecha:"11 may, 2025", hora:"2:30 p.m.", ruta:"Barrio El Oasis - Barrio Primero de Abril" },
+  { id:"v3", conductor:"Andrés Felipe",  icono:"🧔",  fecha:"10 may, 2025", hora:"6:20 p.m.", ruta:"Plazoleta Consuelo Araujo - Barrio La Marina" }
+];
+
+const HIST_BASE = [
+  ["Laura Sofía","👩‍🦱","9 may, 2025","9:15 a.m.",5,"Muy puntual y amable."],
+  ["Carlos Andrés","@conductor","8 may, 2025","7:40 p.m.",4,"Buen viaje, algo lento."],
+  ["María Fernanda","👩","6 may, 2025","10:05 a.m.",5,"Excelente servicio."],
+  ["Andrés Felipe","🧔","5 may, 2025","4:30 p.m.",5,""],
+  ["Valentina R.","👩‍🦰","3 may, 2025","12:10 p.m.",4,"Conduce con cuidado."],
+  ["Laura Sofía","👩‍🦱","1 may, 2025","8:00 a.m.",5,""],
+  ["Carlos Andrés","@conductor","29 abr, 2025","6:45 p.m.",5,"Llegó rápido."],
+  ["Andrés Felipe","🧔","27 abr, 2025","3:20 p.m.",4,""],
+  ["María Fernanda","👩","25 abr, 2025","9:50 a.m.",5,"Muy buen trato."],
+  ["Valentina R.","👩‍🦰","22 abr, 2025","5:35 p.m.",5,""],
+  ["Carlos Andrés","@conductor","20 abr, 2025","1:15 p.m.",4,""],
+  ["Laura Sofía","👩‍🦱","18 abr, 2025","7:25 a.m.",5,"Recomendada."]
+].map(function(h,i){ return { id:"h"+i, conductor:h[0], icono:h[1], fecha:h[2], hora:h[3], estrellas:h[4], comentario:h[5], tags:[] }; });
+
+const ETIQUETAS = { 1:"Muy malo", 2:"Malo", 3:"Regular", 4:"Bueno", 5:"Excelente" };
+const BUENAS = ["Puntual","Amable","Conducción segura","Moto limpia","Buen trato"];
+const MALAS = ["Llegó tarde","Conducción brusca","Poco amable","Moto sucia","Ruta larga"];
+
+/* Foto del conductor Carlos Andrés: la misma foto-perfil.png de la app del conductor
+   (si él la cambia desde "Editar perfil", el usuario ve la nueva) */
+function fotoConductor(){
+  try { var p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); if (p.foto) return p.foto; } catch(e){}
+  return "";
+}
+function icono(x){
+  return x === "@conductor" ? (fotoConductor() ? '<img src="' + fotoConductor() + '" alt="Carlos Andrés">' : "👤") : x;
+}
+
+/* ---------- Estado (se guarda en el navegador) ---------- */
+let calificados = [];
+try { calificados = JSON.parse(localStorage.getItem("tuk_resenas") || "[]"); } catch(e){}
+calificados.forEach(function(c){ if (c.conductor === "Juan Camilo") { c.conductor = "Carlos Andrés"; c.icono = "@conductor"; } });
+
+function guardar(){ try { localStorage.setItem("tuk_resenas", JSON.stringify(calificados)); } catch(e){} }
+function pendientes(){ return VIAJES.filter(function(v){ return !calificados.some(function(c){ return c.id === v.id; }); }); }
+function historial(){ return calificados.concat(HIST_BASE); }
+
+/* ---------- Dibujo ---------- */
+function estrella(llena, color){
+  return '<svg viewBox="0 0 24 24" fill="' + (llena ? color : "none") + '" stroke="' + color + '" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.6 6.2 20.7l1.1-6.5L2.6 9.6l6.5-.9z"/></svg>';
+}
+
+function filaPend(v){
+  var e = "";
+  for (var i = 1; i <= 5; i++) e += '<button class="est" data-i="' + i + '" aria-label="' + i + ' estrellas">' + estrella(false, "#1a5be0") + '</button>';
+  return '<div class="viaje" data-id="' + v.id + '"><div class="fila"><div class="av">' + icono(v.icono) + '</div>' +
+    '<div class="info"><b>' + v.conductor + '</b><small>Viaje del ' + v.fecha + ' · ' + v.hora + '</small><small>Ruta: ' + v.ruta + '</small></div>' +
+    '<span class="flecha">›</span></div><div class="estrellas">' + e + '</div></div>';
+}
+
+function filaHist(h){
+  var e = "";
+  for (var i = 1; i <= 5; i++) e += estrella(i <= h.estrellas, "#1a5be0");
+  return '<div class="hist" data-id="' + h.id + '"><div class="av">' + icono(h.icono) + '</div>' +
+    '<div class="info"><b>' + h.conductor + '</b><small>Viaje del ' + h.fecha + ' · ' + h.hora + '</small></div>' +
+    '<div class="punt">' + e + '<span>' + h.estrellas.toFixed(1) + '</span></div><span class="flecha">›</span></div>';
+}
+
+function pintar(){
+  var p = pendientes(), h = historial();
+  document.getElementById("nPend").textContent = p.length;
+  document.getElementById("nHist").textContent = h.length;
+  document.getElementById("listaPend").innerHTML = p.length ? p.map(filaPend).join("") : '<div class="vacio">🎉 ¡Todo al día! No tienes viajes por calificar.</div>';
+  document.getElementById("prevHist").innerHTML = h.slice(0, 2).map(filaHist).join("");
+  document.getElementById("listaHist").innerHTML = h.map(filaHist).join("");
+}
+
+function pestana(t){
+  document.querySelectorAll(".tab").forEach(function(x){ x.classList.toggle("activo", x.dataset.t === t); });
+  document.getElementById("vistaPend").style.display = t === "pend" ? "block" : "none";
+  document.getElementById("vistaHist").style.display = t === "hist" ? "block" : "none";
+  document.querySelector(".scroll").scrollTop = 0;
+}
+
+document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ pestana(b.dataset.t); }); });
+document.getElementById("verTodas").addEventListener("click", function(){ pestana("hist"); });
+
+/* ---------- Hoja para calificar ---------- */
+const fondo = document.getElementById("fondo");
+let actual = null, nota = 0, tags = [];
+const coment = document.getElementById("coment");
+const enviar = document.getElementById("enviar");
+
+function pintarEstrellas(){
+  var e = "";
+  for (var i = 1; i <= 5; i++) e += '<button class="est" data-i="' + i + '">' + estrella(i <= nota, "#1a5be0") + '</button>';
+  document.getElementById("grandes").innerHTML = e;
+  document.getElementById("etq").textContent = nota ? ETIQUETAS[nota] : "Toca una estrella para calificar";
+  pintarChips();
+  enviar.disabled = !nota;
+}
+
+function pintarChips(){
+  var lista = nota >= 4 || !nota ? BUENAS : MALAS;
+  document.getElementById("chips").innerHTML = lista.map(function(t){
+    return '<button class="chip' + (tags.indexOf(t) > -1 ? " on" : "") + '" data-t="' + t + '">' + t + '</button>';
+  }).join("");
+}
+
+function abrir(id, inicial){
+  var v = historial().filter(function(x){ return x.id === id; })[0];
+  var leer = !!v;                                   // ya calificado: solo se puede ver
+  if (!v) v = VIAJES.filter(function(x){ return x.id === id; })[0];
+  actual = v; nota = leer ? v.estrellas : (inicial || 0); tags = [];
+  document.getElementById("hAv").innerHTML = icono(v.icono);
+  document.getElementById("hNombre").textContent = (leer ? "Tu calificación a " : "Calificar a ") + v.conductor;
+  document.getElementById("hViaje").textContent = "Viaje del " + v.fecha + " · " + v.hora;
+  document.getElementById("bloqueEscribir").style.display = leer ? "none" : "block";
+  document.getElementById("bloqueLeer").style.display = leer ? "block" : "none";
+  enviar.style.display = leer ? "none" : "block";
+  document.getElementById("cancelar").textContent = leer ? "Cerrar" : "Cancelar";
+  if (leer) {
+    var extra = (v.tags && v.tags.length ? "<b>" + v.tags.join(" · ") + "</b><br>" : "") + (v.comentario ? v.comentario : "Sin comentario.");
+    document.getElementById("bloqueLeer").innerHTML = '<div class="leido">' + extra + '</div>';
+  } else { coment.value = ""; document.getElementById("cont").textContent = "0/200"; }
+  pintarEstrellas();
+  if (leer) document.getElementById("grandes").style.pointerEvents = "none"; else document.getElementById("grandes").style.pointerEvents = "auto";
+  fondo.classList.add("abierto");
+}
+
+function cerrar(){ fondo.classList.remove("abierto"); }
+
+document.getElementById("grandes").addEventListener("click", function(e){
+  var b = e.target.closest(".est"); if (!b) return;
+  nota = Number(b.dataset.i); tags = []; pintarEstrellas();
+});
+document.getElementById("chips").addEventListener("click", function(e){
+  var c = e.target.closest(".chip"); if (!c) return;
+  var i = tags.indexOf(c.dataset.t);
+  if (i > -1) tags.splice(i, 1); else tags.push(c.dataset.t);
+  pintarChips();
+});
+coment.addEventListener("input", function(){ document.getElementById("cont").textContent = coment.value.length + "/200"; });
+document.getElementById("cancelar").addEventListener("click", cerrar);
+fondo.addEventListener("click", function(e){ if (e.target === fondo) cerrar(); });
+
+enviar.addEventListener("click", function(){
+  if (!nota || !actual) return;
+  calificados.unshift({ id:actual.id, conductor:actual.conductor, icono:actual.icono, fecha:actual.fecha, hora:actual.hora, ruta:actual.ruta,
+    estrellas:nota, tags:tags.slice(), comentario:coment.value.trim() });
+  guardar(); cerrar(); pintar();
+  var t = document.getElementById("toast"); t.textContent = "¡Gracias por tu calificación! ⭐"; t.classList.add("visible");
+  setTimeout(function(){ t.classList.remove("visible"); }, 1800);
+});
+
+/* Tocar una tarjeta o una estrella abre la hoja */
+document.getElementById("listaPend").addEventListener("click", function(e){
+  var t = e.target.closest(".viaje"); if (!t) return;
+  var s = e.target.closest(".est");
+  abrir(t.dataset.id, s ? Number(s.dataset.i) : 0);
+});
+["prevHist","listaHist"].forEach(function(id){
+  document.getElementById(id).addEventListener("click", function(e){
+    var t = e.target.closest(".hist"); if (t) abrir(t.dataset.id);
+  });
+});
+
+pintar();
+
+</script>
+
+<script>
+// Globo rojo del menú: conversaciones con mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats_usuario"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){ if (n > 0) { b.textContent = n; } else { b.remove(); } });
+  window.addEventListener("pageshow", function(e){ if (e.persisted) location.reload(); });
+})();
+</script>
+
+</body>
+</html>

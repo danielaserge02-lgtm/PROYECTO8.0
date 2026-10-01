@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Mensajes</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);}
+.vista{position:absolute;inset:0;display:none;flex-direction:column;}
+.vista.activa{display:flex;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.hamburguesa{border:none;background:none;font-size:24px;cursor:pointer;}
+.logo{font-size:34px;font-weight:bold;font-style:italic;color:#0a4aa8;letter-spacing:1px;}
+.derecha{display:flex;align-items:center;gap:10px;}
+.campana{position:relative;font-size:20px;}
+.campana::after{content:"";position:absolute;top:0;right:-2px;width:8px;height:8px;background:#e23b3b;border-radius:50%;}
+.avatar{width:38px;height:38px;border-radius:50%;background:#f3c9b8;border:2px solid #d9d9d9;display:grid;place-items:center;font-size:22px;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+h1{font-size:22px;color:#0d2c54;}
+.sub{margin:2px 0 12px;font-size:10px;color:#555;}
+.buscar{display:flex;align-items:center;gap:8px;padding:9px 12px;margin-bottom:10px;background:#fff;border:1px solid #ddd;border-radius:10px;}
+.buscar input{flex:1;border:none;outline:none;background:none;font-size:12px;}
+.chips{display:flex;gap:6px;margin-bottom:12px;}
+.chip{padding:7px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:10px;cursor:pointer;}
+.chip.activo{background:#1a73e8;border-color:#1a73e8;color:#fff;font-weight:bold;}
+
+.chat{display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;transition:.2s;}
+.chat:hover{background:#eef6fb;}
+.foto{position:relative;flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:#e3eef6;}
+.foto img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.foto.morado{background:#ece3fb;}
+.foto.verde{background:#dff5e6;}
+.en-linea{position:absolute;left:0;bottom:1px;width:10px;height:10px;border-radius:50%;background:#19b34a;border:2px solid #fff;}
+.texto{flex:1;min-width:0;}
+.nombre{font-size:13px;font-weight:bold;color:#111;}
+.mensaje{margin-top:4px;font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lado{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:38px;}
+.hora{font-size:9px;color:#777;}
+.contador{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#1a73e8;color:#fff;font-size:10px;font-weight:bold;display:grid;place-items:center;}
+.vacio{margin-top:20px;text-align:center;font-size:12px;color:#777;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-6px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+
+/* Conversación */
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;}
+#vistaChat .cabecera{gap:8px;justify-content:flex-start;}
+#vistaChat .foto{width:40px;height:40px;font-size:22px;}
+.quien{flex:1;min-width:0;}
+.quien b{display:block;font-size:14px;color:#0d2c54;}
+.quien small{font-size:10px;color:#666;}
+.quien small.escribiendo{color:#1a73e8;font-style:italic;}
+.cuerpo{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;}
+.cuerpo::-webkit-scrollbar{display:none;}
+.fila{display:flex;}
+.fila.yo{justify-content:flex-end;}
+.burbuja{max-width:78%;padding:8px 11px;border-radius:14px;background:#fff;font-size:12px;line-height:1.35;box-shadow:0 1px 4px rgba(0,0,0,.1);word-wrap:break-word;}
+.fila.yo .burbuja{background:#1a73e8;color:#fff;border-bottom-right-radius:4px;}
+.fila.ellos .burbuja{border-bottom-left-radius:4px;}
+.burbuja span{display:block;margin-top:3px;font-size:8px;opacity:.7;text-align:right;}
+.entrada{display:flex;gap:8px;padding:10px 12px 14px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.08);}
+.entrada input{flex:1;padding:10px 14px;border:1px solid #ddd;border-radius:20px;font-size:12px;outline:none;}
+.entrada input:focus{border-color:#1a73e8;}
+.entrada button{flex:none;width:40px;height:40px;border:none;border-radius:50%;background:#1a73e8;color:#fff;font-size:16px;cursor:pointer;}
+.entrada button:hover{background:#155fc0;}
+@media (max-width:480px){ .entrada input,.buscar input{font-size:16px;} }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<!-- LISTA DE CONVERSACIONES -->
+<section class="vista activa" id="vistaLista">
+<div class="cabecera">
+<button class="hamburguesa" aria-label="Menú">☰</button>
+<div class="logo">TÜK</div>
+<div class="derecha"><span class="campana">🔔</span><div class="avatar">👩</div></div>
+</div>
+
+<div class="scroll">
+<h1>Mensajes</h1>
+<p class="sub">Comunícate con tus pasajeros y el equipo de soporte</p>
+
+<div class="buscar"><span>🔍</span><input type="text" id="buscador" placeholder="Buscar conversaciones"></div>
+
+<div class="chips">
+<button class="chip activo" data-f="todos">💬 Todos</button>
+<button class="chip" data-f="notificaciones">🔔 Notificaciones</button>
+</div>
+
+<div id="lista"></div>
+</div>
+
+<nav class="menu">
+<a href="usuario.html"><span class="ico">🏠</span>Inicio</a>
+<a href="comentarios.html"><span class="ico">⭐</span>Comentarios</a>
+<a href="mensajes-usuario.html" class="activo"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil-usuario.html"><span class="ico">👤</span>Perfil</a>
+</nav>
+</section>
+
+<!-- CONVERSACIÓN -->
+<section class="vista" id="vistaChat">
+<div class="cabecera">
+<button class="atras" id="volver" aria-label="Volver">‹</button>
+<div class="foto" id="foto"></div>
+<div class="quien"><b id="nombre"></b><small id="detalle"></small></div>
+</div>
+<div class="cuerpo" id="cuerpo"></div>
+<form class="entrada" id="form" autocomplete="off">
+<input type="text" id="texto" placeholder="Escribe un mensaje...">
+<button type="submit" aria-label="Enviar">➤</button>
+</form>
+</section>
+
+</div>
+
+<script>
+
+/* Foto del conductor Carlos Andrés: la misma foto-perfil.png de la app del conductor
+   (si él la cambia desde "Editar perfil", el usuario ve la nueva) */
+function fotoConductor(){
+  try { var p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); if (p.foto) return p.foto; } catch(e){}
+  return "";
+}
+function icono(x){
+  return x === "@conductor" ? (fotoConductor() ? '<img src="' + fotoConductor() + '" alt="Carlos Andrés">' : "👤") : x;
+}
+
+/* ---------- Conversaciones (se regeneran al volver a entrar) ---------- */
+const BASE = [
+  { id:0, nombre:"Carlos Andrés",   tipo:"conductores",    icono:"@conductor",   linea:true, nuevos:1, hora:"8:45 a.m.", msgs:[
+    { de:"ellos", t:"Buen día, ¿a dónde te llevo hoy?", h:"8:40 a.m." },
+    { de:"yo",    t:"Hola Carlos, ¿puedes llegar en 5 minutos?", h:"8:45 a.m." } ] },
+  { id:1, nombre:"María Fernanda", tipo:"conductores",    icono:"👩",   linea:true, nuevos:2, hora:"9:30 a.m.", msgs:[
+    { de:"ellos", t:"Hola, ya llegué al punto de encuentro", h:"9:12 a.m." },
+    { de:"yo",    t:"Gracias por el viaje, que tengas un excelente día 😊", h:"9:30 a.m." } ] },
+  { id:2, nombre:"Soporte TÜK",    tipo:"soporte",        icono:"🎧",   color:"morado", nuevos:1, hora:"Ayer", msgs:[
+    { de:"ellos", t:"¡Hola! Somos el equipo de soporte de TÜK. ¿En qué te ayudamos?", h:"4:05 p.m." },
+    { de:"yo",    t:"Hola, tengo una duda sobre un reporte que hice ayer.", h:"4:10 p.m." } ] },
+  { id:3, nombre:"Laura Sofía",    tipo:"conductores",    icono:"👩‍🦱", linea:true, nuevos:0, hora:"Ayer", msgs:[
+    { de:"ellos", t:"Voy en camino, llego en 3 minutos", h:"6:40 p.m." },
+    { de:"yo",    t:"Perfecto, estaré esperando en la esquina.", h:"6:42 p.m." } ] },
+  { id:4, nombre:"TÜK",            tipo:"notificaciones", icono:"📢",   color:"verde", nuevos:0, hora:"10 may.", msgs:[
+    { de:"ellos", t:"Hoy tienes una promoción especial en tus viajes 🛺", h:"7:00 a.m." },
+    { de:"yo",    t:"¿Cuáles son las condiciones de la promoción del día?", h:"7:30 a.m." } ] },
+  { id:5, nombre:"Andrés Felipe",  tipo:"conductores",    icono:"🧔",   linea:true, nuevos:0, hora:"9 may.", msgs:[
+    { de:"ellos", t:"Llegamos a tu destino", h:"6:20 p.m." },
+    { de:"yo",    t:"Listo, muchas gracias!", h:"6:21 p.m." } ] },
+  { id:6, nombre:"Valentina R.",   tipo:"conductores",    icono:"👩‍🦰", linea:true, nuevos:0, hora:"8 may.", msgs:[
+    { de:"ellos", t:"Buen día, ¿lista para el viaje?", h:"11:00 a.m." },
+    { de:"yo",    t:"Buen servicio, recomendado 👌", h:"11:07 a.m." } ] }
+];
+
+const RESPUESTAS = {
+  conductores:    ["Claro, ya voy en camino 🛺", "Perfecto, en unos minutos llego", "Con gusto, gracias a ti 😊", "Entendido, cualquier cosa me avisas"],
+  soporte:        ["Gracias por escribirnos. Un asesor revisará tu caso y te responderá en breve.", "Ya estamos revisando tu solicitud."],
+  notificaciones: ["¡Gracias por tu mensaje! Te responderemos pronto."]
+};
+
+function cargar(){
+  try { var g = JSON.parse(sessionStorage.getItem("tuk_chats_usuario")); if (g && g.length) return g; } catch(e){}
+  return JSON.parse(JSON.stringify(BASE));
+}
+function guardar(){ try { sessionStorage.setItem("tuk_chats_usuario", JSON.stringify(chats)); } catch(e){} }
+
+const chats = cargar();
+chats.forEach(function(c){
+  if (c.id === 0 && c.nombre === "Juan Camilo") {
+    c.nombre = "Carlos Andrés"; c.icono = "@conductor";
+    c.msgs.forEach(function(m){ m.t = m.t.replace("Hola Juan,", "Hola Carlos,"); });
+  }
+});
+let filtro = "todos", abierto = null, desdeLista = false, temporizador = null;
+
+function ultimo(c){ var m = c.msgs[c.msgs.length - 1]; return (m.de === "yo" ? "Tú: " : "") + m.t; }
+function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function horaActual(){
+  return new Date().toLocaleTimeString("es-CO", { hour:"numeric", minute:"2-digit", hour12:true }).replace(/\s/g, " ").replace("a. m.","a.m.").replace("p. m.","p.m.");
+}
+function avatar(c){ return '<div class="foto ' + (c.color || "") + '">' + icono(c.icono) + (c.linea ? '<span class="en-linea"></span>' : "") + '</div>'; }
+
+/* ---------- Lista ---------- */
+function pintarLista(){
+  var q = document.getElementById("buscador").value.trim().toLowerCase(), html = "";
+  chats.forEach(function(c){
+    if (c.tipo === "notificaciones" && !TUK.cfg().promos) return;
+    if (filtro !== "todos" && c.tipo !== filtro) return;
+    if (q && c.nombre.toLowerCase().indexOf(q) === -1) return;
+    html += '<div class="chat" data-id="' + c.id + '">' + avatar(c) +
+      '<div class="texto"><div class="nombre">' + c.nombre + '</div><div class="mensaje">' + esc(ultimo(c)) + '</div></div>' +
+      '<div class="lado"><span class="hora">' + c.hora + '</span>' + (c.nuevos ? '<span class="contador">' + c.nuevos + '</span>' : "") + '</div></div>';
+  });
+  document.getElementById("lista").innerHTML = html || '<p class="vacio">No se encontraron conversaciones.</p>';
+  actualizarGlobo();
+}
+
+function actualizarGlobo(){
+  var n = chats.filter(function(c){ return c.nuevos > 0; }).length;
+  document.querySelectorAll(".menu .badge").forEach(function(b){ if (n > 0) { b.textContent = n; } else { b.remove(); } });
+}
+
+document.getElementById("buscador").addEventListener("input", pintarLista);
+document.querySelectorAll(".chip").forEach(function(ch){
+  ch.addEventListener("click", function(){
+    document.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("activo"); });
+    ch.classList.add("activo"); filtro = ch.dataset.f; pintarLista();
+  });
+});
+document.getElementById("lista").addEventListener("click", function(e){
+  var t = e.target.closest(".chat"); if (!t) return;
+  desdeLista = true; location.hash = "#chat-" + t.dataset.id;
+});
+
+/* ---------- Conversación ---------- */
+function pintarChat(){
+  var c = abierto, cuerpo = document.getElementById("cuerpo");
+  cuerpo.innerHTML = c.msgs.map(function(m){
+    return '<div class="fila ' + m.de + '"><div class="burbuja">' + esc(m.t) + '<span>' + m.h + '</span></div></div>';
+  }).join("");
+  cuerpo.scrollTop = cuerpo.scrollHeight;
+}
+
+function detalle(c, escribiendo){
+  var d = document.getElementById("detalle");
+  d.className = escribiendo ? "escribiendo" : "";
+  d.textContent = escribiendo ? "escribiendo..." : (c.linea ? "En línea" : c.tipo === "soporte" ? "Equipo de soporte" : c.tipo === "notificaciones" ? "Canal oficial TÜK" : "Conductor");
+}
+
+function mostrar(){
+  var m = /^#chat-(\d+)$/.exec(location.hash);
+  var c = m && chats.filter(function(x){ return x.id === Number(m[1]); })[0];
+  if (!c) {
+    abierto = null;
+    document.getElementById("vistaChat").classList.remove("activa");
+    document.getElementById("vistaLista").classList.add("activa");
+    pintarLista(); return;
+  }
+  abierto = c; c.nuevos = 0; guardar();
+  var f = document.getElementById("foto");
+  f.className = "foto " + (c.color || ""); f.innerHTML = icono(c.icono) + (c.linea ? '<span class="en-linea"></span>' : "");
+  document.getElementById("nombre").textContent = c.nombre;
+  detalle(c, false); pintarChat();
+  document.getElementById("vistaLista").classList.remove("activa");
+  document.getElementById("vistaChat").classList.add("activa");
+  document.getElementById("cuerpo").scrollTop = document.getElementById("cuerpo").scrollHeight;
+}
+
+document.getElementById("volver").addEventListener("click", function(){
+  if (desdeLista) { desdeLista = false; history.back(); } else { location.hash = ""; }
+});
+window.addEventListener("hashchange", mostrar);
+
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var input = document.getElementById("texto"), t = input.value.trim();
+  if (!t || !abierto) return;
+  var c = abierto, h = horaActual();
+  c.msgs.push({ de:"yo", t:t, h:h }); c.hora = h;
+  chats.splice(chats.indexOf(c), 1); chats.unshift(c);   // sube al primer lugar
+  guardar(); input.value = ""; pintarChat(); detalle(c, true);
+
+  // Respuesta automática de ejemplo
+  var opciones = RESPUESTAS[c.tipo] || RESPUESTAS.conductores;
+  var n = c.msgs.filter(function(m){ return m.de === "yo"; }).length;
+  clearTimeout(temporizador);
+  temporizador = setTimeout(function(){
+    var hr = horaActual();
+    c.msgs.push({ de:"ellos", t:opciones[(n - 1) % opciones.length], h:hr }); c.hora = hr;
+    guardar(); if (TUK.cfg().mensajes) TUK.beep();
+    if (abierto === c) { pintarChat(); detalle(c, false); } else { if (TUK.cfg().mensajes) c.nuevos++; guardar(); if (!abierto) pintarLista(); }
+  }, 1300);
+});
+
+mostrar();
+
+</script>
+
+</body>
+</html>

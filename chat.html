@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Chat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;
+height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);
+height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;text-decoration:none;}
+.titulo-pag{flex:1;font-size:18px;font-weight:bold;color:#0d2c54;}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#f7c531;border:2px solid #0a4aa8;display:grid;place-items:center;font-size:20px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;padding:12px;}
+.tarjeta h3{font-size:13px;color:#0d2c54;margin-bottom:10px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+</style>
+<style>
+.cabecera{ box-shadow:0 2px 10px rgba(0,0,0,.15); }
+.foto{ position:relative; flex:none; width:40px; height:40px; border-radius:50%; background:#e3eef6; display:grid; place-items:center; font-size:22px; }
+.foto.morado{ background:#ece3fb; }
+.foto.verde{ background:#dff5e6; }
+.en-linea{ position:absolute; left:0; bottom:1px; width:10px; height:10px; border-radius:50%; background:#19b34a; border:2px solid #fff; }
+.quien{ flex:1; min-width:0; }
+.quien b{ display:block; font-size:14px; color:#0d2c54; }
+.quien small{ font-size:10px; color:#666; }
+
+.cuerpo{ flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:8px; scrollbar-width:none; }
+.cuerpo::-webkit-scrollbar{ display:none; }
+.fila{ display:flex; }
+.fila.yo{ justify-content:flex-end; }
+.burbuja{ max-width:78%; padding:8px 11px; border-radius:14px; background:#fff; font-size:12px; line-height:1.35; box-shadow:0 1px 4px rgba(0,0,0,.1); word-wrap:break-word; }
+.fila.yo .burbuja{ background:#1a73e8; color:#fff; border-bottom-right-radius:4px; }
+.fila.ellos .burbuja{ border-bottom-left-radius:4px; }
+.burbuja span{ display:block; margin-top:3px; font-size:8px; opacity:.7; text-align:right; }
+
+.entrada{ display:flex; gap:8px; padding:10px 12px 14px; background:#fff; box-shadow:0 -2px 10px rgba(0,0,0,.08); }
+.entrada input{ flex:1; padding:10px 14px; border:1px solid #ddd; border-radius:20px; font-size:12px; outline:none; }
+.entrada input:focus{ border-color:#1a73e8; }
+.entrada button{ flex:none; width:40px; height:40px; border:none; border-radius:50%; background:#1a73e8; color:#fff; font-size:16px; cursor:pointer; }
+.entrada button:hover{ background:#155fc0; }
+.aviso{ padding:14px; background:#fff; text-align:center; font-size:11px; color:#666; box-shadow:0 -2px 10px rgba(0,0,0,.08); }
+</style>
+<style>
+@media (max-width:480px){ .entrada input{ font-size:16px; } }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="mensajes.html" aria-label="Volver">‹</a>
+<div class="foto" id="foto"></div>
+<div class="quien"><b id="nombre"></b><small id="detalle"></small></div>
+</div>
+
+<div class="cuerpo" id="cuerpo"></div>
+
+<form class="entrada" id="form" autocomplete="off">
+<input type="text" id="texto" placeholder="Escribe un mensaje...">
+<button type="submit" aria-label="Enviar">➤</button>
+</form>
+<div class="aviso" id="aviso" style="display:none;">Este canal es solo informativo.</div>
+
+</div>
+
+<script>
+// Conversaciones compartidas entre mensajes.html y chat.html
+const CHATS_BASE = [
+  { id:0, nombre:"María Fernanda", tipo:"pasajeros", icono:"👩", linea:true, nuevos:2, hora:"9:30 a.m.", msgs:[
+    { de:"ellos", t:"Hola, ya estoy en la esquina de la calle 2", h:"9:12 a.m." },
+    { de:"yo",    t:"Perfecto, voy llegando", h:"9:13 a.m." },
+    { de:"ellos", t:"Gracias por el viaje, muy amable 😊", h:"9:30 a.m." } ] },
+  { id:1, nombre:"Juan Camilo", tipo:"pasajeros", icono:"👨", linea:true, nuevos:1, hora:"8:45 a.m.", msgs:[
+    { de:"ellos", t:"Buen día, necesito un servicio hacia el centro", h:"8:40 a.m." },
+    { de:"yo",    t:"Claro, ¿en qué dirección estás?", h:"8:42 a.m." },
+    { de:"ellos", t:"¿Puedes llegar en 5 minutos?", h:"8:45 a.m." } ] },
+  { id:2, nombre:"Soporte TÜK", tipo:"soporte", icono:"🎧", color:"morado", nuevos:1, hora:"Ayer", msgs:[
+    { de:"yo",    t:"Hola, quiero reportar un problema con un pasajero", h:"4:10 p.m." },
+    { de:"ellos", t:"Tu reporte ha sido recibido y será revisado pronto.", h:"4:15 p.m." } ] },
+  { id:3, nombre:"Laura Sofía", tipo:"pasajeros", icono:"👩‍🦱", linea:true, nuevos:0, hora:"Ayer", msgs:[
+    { de:"ellos", t:"Hola, ¿ya vienes en camino?", h:"6:40 p.m." },
+    { de:"yo",    t:"Sí, llego en 3 minutos", h:"6:41 p.m." },
+    { de:"ellos", t:"Perfecto, estaré esperando en la esquina.", h:"6:42 p.m." } ] },
+  { id:4, nombre:"TÜK", tipo:"notificaciones", icono:"📢", color:"verde", soloLectura:true, nuevos:0, hora:"10 may.", msgs:[
+    { de:"ellos", t:"¡Bienvenido a TÜK! Gracias por ser parte de nuestra comunidad.", h:"9:00 a.m." },
+    { de:"ellos", t:"Promoción del día: gana hasta 20% más en tus carreras. 🛺", h:"7:00 a.m." } ] },
+  { id:5, nombre:"Andrés Felipe", tipo:"pasajeros", icono:"🧔", nuevos:0, hora:"10 may.", msgs:[
+    { de:"yo",    t:"Llegamos, que tenga un buen día", h:"2:20 p.m." },
+    { de:"ellos", t:"Listo, muchas gracias!", h:"2:21 p.m." } ] },
+  { id:6, nombre:"Valentina R.", tipo:"pasajeros", icono:"👩‍🦰", linea:true, nuevos:0, hora:"10 may.", msgs:[
+    { de:"yo",    t:"Gracias por viajar con TÜK", h:"11:05 a.m." },
+    { de:"ellos", t:"Buen servicio, recomendado 👌", h:"11:07 a.m." } ] }
+];
+
+function cargarChats(){
+  try { localStorage.removeItem("tuk_chats"); } catch(e){}   // limpia datos de versiones anteriores
+  try {
+    const g = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (g && g.length) return g;
+  } catch(e){}
+  return JSON.parse(JSON.stringify(CHATS_BASE));
+}
+
+function guardarChats(c){
+  try { sessionStorage.setItem("tuk_chats", JSON.stringify(c)); } catch(e){}
+}
+
+function ultimoMsg(c){ return c.msgs[c.msgs.length - 1].t; }
+</script>
+<script>
+
+const id = Number(new URLSearchParams(location.search).get("id")) || 0;
+const chats = cargarChats();
+const chat = chats.find(function(c){ return c.id === id; }) || chats[0];
+
+chat.nuevos = 0;                    // al abrir, queda como leído
+guardarChats(chats);
+
+const cuerpo = document.getElementById("cuerpo");
+const foto = document.getElementById("foto");
+
+foto.className = "foto " + (chat.color || "");
+foto.innerHTML = chat.icono + (chat.linea ? '<span class="en-linea"></span>' : "");
+document.getElementById("nombre").textContent = chat.nombre;
+document.getElementById("detalle").textContent =
+  chat.linea ? "En línea" :
+  chat.tipo === "soporte" ? "Equipo de soporte" :
+  chat.tipo === "notificaciones" ? "Canal informativo" : "Pasajero";
+
+if (chat.soloLectura) {
+  document.getElementById("form").style.display = "none";
+  document.getElementById("aviso").style.display = "block";
+}
+
+function esc(s){ const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+function horaActual(){
+  return new Date().toLocaleTimeString("es-CO", { hour:"numeric", minute:"2-digit", hour12:true })
+    .replace(/\s/g, " ").replace("a. m.", "a.m.").replace("p. m.", "p.m.");
+}
+
+function pintar(){
+  cuerpo.innerHTML = chat.msgs.map(function(m){
+    return '<div class="fila ' + m.de + '"><div class="burbuja">' + esc(m.t) + '<span>' + m.h + '</span></div></div>';
+  }).join("");
+  cuerpo.scrollTop = cuerpo.scrollHeight;
+}
+
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+  const input = document.getElementById("texto");
+  const t = input.value.trim();
+  if (!t) return;
+
+  const h = horaActual();
+  chat.msgs.push({ de:"yo", t:t, h:h });
+  chat.hora = h;
+
+  chats.splice(chats.indexOf(chat), 1);   // la conversación sube al primer lugar
+  chats.unshift(chat);
+  guardarChats(chats);
+
+  input.value = "";
+  pintar();
+});
+
+pintar();
+
+</script>
+
+</body>
+</html>

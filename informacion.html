@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Información personal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;
+height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);
+height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;text-decoration:none;}
+.titulo-pag{flex:1;font-size:18px;font-weight:bold;color:#0d2c54;}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#f7c531;border:2px solid #0a4aa8;display:grid;place-items:center;font-size:20px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;padding:12px;}
+.tarjeta h3{font-size:13px;color:#0d2c54;margin-bottom:10px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+</style>
+<style>
+.fila{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; font-size:12px; border-bottom:1px solid #f0f0f0; }
+.fila:last-child{ border-bottom:none; }
+.fila span{ color:#666; }
+.fila b{ color:#111; text-align:right; }
+.fila b.verde{ color:#0a7a3a; }
+
+.cedula{ margin-top:10px; cursor:pointer; }
+.cedula .titulo{ margin-bottom:6px; font-size:12px; color:#666; }
+.cedula .miniatura{ width:100%; height:150px; border-radius:10px; background:#e3eef6; overflow:hidden; display:grid; place-items:center; font-size:12px; color:#777; }
+.cedula .miniatura img{ width:100%; height:100%; object-fit:cover; }
+.cedula small{ display:block; margin-top:4px; font-size:9px; color:#888; }
+
+.vacio{ margin-bottom:10px; padding:10px 12px; border-radius:10px; background:#fff3d6; font-size:11px; color:#7a5200; }
+.vacio a{ color:#0a4aa8; font-weight:bold; }
+
+.editar{ display:block; padding:12px; border-radius:10px; background:#d6ecf9; color:#0a4aa8; font-size:13px; font-weight:bold; text-align:center; text-decoration:none; }
+.editar:hover{ background:#bfe0f3; }
+
+.visor{ display:none; position:absolute; inset:0; z-index:10; background:rgba(0,0,0,.88); padding:20px; flex-direction:column; align-items:center; justify-content:center; gap:12px; cursor:pointer; }
+.visor.abierto{ display:flex; }
+.visor img{ max-width:100%; max-height:75%; border-radius:10px; }
+.visor p{ color:#fff; font-size:13px; }
+.visor small{ color:#ccc; font-size:10px; }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="perfil.html" aria-label="Volver">‹</a>
+<div class="titulo-pag">Información personal</div>
+<div class="avatar">👤</div>
+</div>
+
+<div class="scroll">
+
+<div id="aviso"></div>
+
+<div class="tarjeta">
+<h3>Datos personales</h3>
+<div class="fila"><span>Nombre completo</span><b data-nombre>Carlos Andrés</b></div>
+<div class="fila"><span>Número de documento</span><b id="doc">—</b></div>
+<div class="fila"><span>Correo</span><b id="mail">—</b></div>
+<div class="fila"><span>Fecha de nacimiento</span><b id="nac">—</b></div>
+<div class="fila"><span>Ciudad</span><b id="ciu">—</b></div>
+<div class="fila"><span>Contacto de emergencia</span><b id="emer">—</b></div>
+<div class="fila"><span>Descripción</span><b data-descripcion style="max-width:62%;font-weight:normal;">Conductor TÜK comprometido con un servicio seguro y puntual.</b></div>
+
+<div class="cedula" id="cedula">
+<div class="titulo">Foto de la cédula</div>
+<div class="miniatura" id="miniCedula">Sin foto</div>
+<small id="toca" style="display:none;">Toca la foto para verla en grande</small>
+</div>
+</div>
+
+<div class="tarjeta">
+<h3>Datos de la cuenta</h3>
+<div class="fila"><span>Cuenta creada</span><b id="creada">—</b></div>
+<div class="fila"><span>Tipo de cuenta</span><b>Conductor</b></div>
+<div class="fila"><span>Estado de la cuenta</span><b class="verde">Activa</b></div>
+<div class="fila"><span>Celular</span><b id="cel">—</b></div>
+<div class="fila"><span>Viajes realizados</span><b>62</b></div>
+</div>
+
+<a class="editar" href="editar-perfil.html">✏️ Editar perfil</a>
+
+</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+<div class="visor" id="visor"><img id="visorImg" alt=""><p>Cédula</p><small>Toca para cerrar</small></div>
+
+</div>
+
+<script>
+
+let fotos = {}, datos = {}, registro = null;
+try {
+  fotos = JSON.parse(localStorage.getItem("tuk_docs") || "{}");
+  datos = JSON.parse(localStorage.getItem("tuk_datos") || "{}");
+  registro = localStorage.getItem("tuk_registro");
+} catch(e){}
+
+document.getElementById("doc").textContent = datos.documento || "—";
+document.getElementById("cel").textContent = datos.celular || "—";
+document.getElementById("creada").textContent = registro || "—";
+
+if (fotos.cedula) {
+  document.getElementById("miniCedula").innerHTML = '<img src="' + fotos.cedula + '" alt="Cédula">';
+  document.getElementById("toca").style.display = "block";
+} else {
+  document.getElementById("aviso").innerHTML =
+    '<div class="vacio">Aún no hay datos guardados. Completa el <a href="conductor.html">registro del conductor</a> para verlos aquí.</div>';
+}
+
+const visor = document.getElementById("visor");
+
+document.getElementById("cedula").addEventListener("click", function(){
+  if (!fotos.cedula) return;
+  document.getElementById("visorImg").src = fotos.cedula;
+  visor.classList.add("abierto");
+});
+
+visor.addEventListener("click", function(){ visor.classList.remove("abierto"); });
+
+</script>
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+<script>
+var c=TUK.cuenta()||{},g=function(i,t){document.getElementById(i).textContent=t||"—"};
+g("mail",c.correo);g("cel",c.telefono);g("nac",c.fecha?TUK.fecha(c.fecha)+" ("+TUK.edad(c.fecha)+" "+TUK.t("Años")+")":"");g("ciu",c.ciudad);
+g("emer",c.emerNombre?c.emerNombre+(c.emerTel?" · "+c.emerTel:""):"");g("creada",c.creada?TUK.fecha(c.creada):"");
+</script>
+</body>
+</html>

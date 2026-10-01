@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<script src="tuk.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Registro</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Times New Roman", serif;
+}
+
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:#52c6f4;
+}
+
+.telefono{
+width:330px;
+height:700px;
+background:#c8e9f8;
+border-radius:30px;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+.telefono::before{
+content:"";
+position:absolute;
+width:450px;
+height:450px;
+border:4px solid white;
+border-radius:50%;
+left:-270px;
+top:-50px;
+}
+
+.telefono::after{
+content:"";
+position:absolute;
+width:480px;
+height:480px;
+border:4px solid white;
+border-radius:50%;
+right:-300px;
+bottom:-180px;
+}
+
+.onda1{
+position:absolute;
+width:380px;
+height:380px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+left:-260px;
+top:170px;
+}
+
+.onda2{
+position:absolute;
+width:360px;
+height:360px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+right:-240px;
+top:-40px;
+}
+
+.contenido{
+position:relative;
+z-index:2;
+padding:25px;
+}
+
+h1{
+text-align:center;
+font-size:36px;
+margin-top:20px;
+margin-bottom:35px;
+}
+
+label{
+display:block;
+margin-bottom:5px;
+margin-top:12px;
+font-size:16px;
+}
+
+input{
+width:100%;
+padding:10px;
+border:none;
+border-radius:15px;
+background:#d9d9d9;
+font-size:15px;
+outline:none;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:30px;
+border:none;
+background:#d9d9d9;
+font-size:20px;
+cursor:pointer;
+border-radius:5px;
+transition:.3s;
+}
+
+button:hover{
+background:#bdbdbd;
+}
+
+.enlace{
+text-align:center;
+margin-top:20px;
+}
+
+.enlace a{
+text-decoration:none;
+color:black;
+}
+
+.enlace a:hover{
+text-decoration:underline;
+}
+
+h1{font-size:30px!important;margin:8px 0 14px!important}label{margin-top:8px!important}button{margin-top:18px!important}</style>
+
+</head>
+
+<body>
+
+<div class="telefono">
+
+<div class="onda1"></div>
+<div class="onda2"></div>
+
+<div class="contenido">
+
+<h1>REGISTRAR</h1>
+
+<form id="f">
+
+<label>Nombre Completo</label>
+
+<input
+type="text"
+name="nombre"
+placeholder="Ingrese su nombre"
+required>
+
+<label>Correo Electronico</label>
+
+<input
+type="email"
+name="correo"
+placeholder="Ingrese su correo"
+required>
+
+<label>Numero Telefonico</label>
+<input type="tel" name="telefono" placeholder="Ingrese su numero" required>
+
+<label>Fecha de Nacimiento</label>
+
+<input
+type="date"
+name="fecha"
+required>
+
+<label>Contraseña</label>
+
+<input
+type="password"
+name="contrasena"
+placeholder="Ingrese una contraseña"
+required>
+
+<label>Confirmar Contraseña</label>
+
+<input
+type="password"
+name="confirmar"
+placeholder="Repita la contraseña"
+required>
+
+<button type="submit">
+REGISTRAR
+</button>
+
+</form>
+
+<div class="enlace">
+
+<a href="index.html">¿Ya tienes cuenta? Inicia sesión</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+var f=document.getElementById("f"),m=document.createElement("div");m.style.cssText="color:#b00;text-align:center;font-size:14px;min-height:18px;margin-top:8px";f.appendChild(m);var x=TUK.t,err=function(s){m.textContent=x(s)};f.addEventListener("submit",function(e){e.preventDefault();var v=function(n){return f.elements[n].value.trim()};
+if(v("telefono").replace(/\D/g,"").length<7)return err("Escribe un teléfono válido.");
+if(new Date(v("fecha"))>new Date())return err("La fecha de nacimiento no es válida.");
+var p=f.elements.contrasena.value;if(p.length<6)return err("Mínimo 6 caracteres.");if(p!==f.elements.confirmar.value)return err("Las contraseñas no coinciden.");
+if(TUK.cuenta()&&!confirm(x("Ya existe una cuenta en este dispositivo. Si registras otra, se reemplazará. ¿Continuar?")))return;
+["tuk_sesion","tuk_docs","tuk_datos","tuk_perfil","tuk_vehiculo","tuk_registro","tuk_usuario","tuk_resenas","tuk_enlinea"].forEach(function(k){localStorage.removeItem(k)});
+TUK.guardar({nombre:v("nombre"),correo:v("correo").toLowerCase(),telefono:v("telefono"),fecha:v("fecha"),contrasena:p,creada:new Date().toISOString().slice(0,10)});
+location.href="index.html"});
+</script>
+</body>
+
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<script src="tuk.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Seleccionar Rol</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Times New Roman",serif;
+}
+
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:#52c6f4;
+}
+
+.telefono{
+width:330px;
+height:700px;
+background:#c8e9f8;
+border-radius:30px;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+/* Ondas */
+
+.telefono::before{
+content:"";
+position:absolute;
+width:450px;
+height:450px;
+border:4px solid white;
+border-radius:50%;
+left:-270px;
+top:-50px;
+}
+
+.telefono::after{
+content:"";
+position:absolute;
+width:480px;
+height:480px;
+border:4px solid white;
+border-radius:50%;
+right:-300px;
+bottom:-180px;
+}
+
+.onda1{
+position:absolute;
+width:380px;
+height:380px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+left:-260px;
+top:170px;
+}
+
+.onda2{
+position:absolute;
+width:360px;
+height:360px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+right:-240px;
+top:-40px;
+}
+
+.contenido{
+position:relative;
+z-index:2;
+padding:30px;
+text-align:center;
+}
+
+.logo{
+font-size:65px;
+font-weight:bold;
+margin-top:30px;
+margin-bottom:80px;
+}
+
+h2{
+font-size:30px;
+margin-bottom:50px;
+}
+
+button{
+width:220px;
+padding:15px;
+margin:20px auto;
+display:block;
+background:#d9d9d9;
+border:none;
+border-radius:5px;
+font-size:20px;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+background:#bdbdbd;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="telefono">
+
+<div class="onda1"></div>
+<div class="onda2"></div>
+
+<div class="contenido">
+
+<div class="logo">
+TUK
+</div>
+
+<h2>SELECCIONE SU ROL</h2>
+
+<form action="usuario.html">
+<button type="submit">
+SOY USUARIO
+</button>
+</form>
+
+<form action="conductor.html">
+<button type="submit">
+SOY CONDUCTOR
+</button>
+</form>
+
+</div>
+
+</div>
+
+<script>
+if(localStorage.getItem("tuk_docs"))document.querySelector('form[action="conductor.html"]').action="inicio-conductor.html";
+</script>
+</body>
+
+</html>

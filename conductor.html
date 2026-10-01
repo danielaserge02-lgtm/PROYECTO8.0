@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+<html lang="es">
+ 
+<head>
+<script src="tuk.js"></script>
+ 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+ 
+<title>Documentos del Conductor</title>
+ 
+<style>
+ 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:"Times New Roman",serif;
+}
+ 
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+height:100dvh;
+background:#52c6f4;
+}
+ 
+.telefono{
+width:330px;
+height:min(700px,96vh);
+height:min(700px,96dvh);
+background:#c8e9f8;
+border-radius:30px;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+ 
+/* Ondas */
+ 
+.telefono::before{
+content:"";
+position:absolute;
+width:450px;
+height:450px;
+border:4px solid white;
+border-radius:50%;
+left:-270px;
+top:-50px;
+}
+ 
+.telefono::after{
+content:"";
+position:absolute;
+width:480px;
+height:480px;
+border:4px solid white;
+border-radius:50%;
+right:-300px;
+bottom:-180px;
+}
+ 
+.onda1{
+position:absolute;
+width:380px;
+height:380px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+left:-260px;
+top:170px;
+}
+ 
+.onda2{
+position:absolute;
+width:360px;
+height:360px;
+border:4px solid #2cb5e8;
+border-radius:50%;
+right:-240px;
+top:-40px;
+}
+ 
+.contenido{
+position:relative;
+z-index:2;
+height:100%;
+padding:26px 22px 20px;
+text-align:center;
+display:flex;
+flex-direction:column;
+}
+ 
+h2{
+font-size:21px;
+line-height:1.2;
+margin-bottom:8px;
+}
+ 
+.subtitulo{
+font-size:16px;
+line-height:1.25;
+margin-bottom:18px;
+}
+ 
+label.campo{
+display:block;
+text-align:left;
+font-size:16px;
+margin:0 0 4px 4px;
+}
+ 
+input[type="text"],
+input[type="tel"]{
+width:100%;
+height:28px;
+margin-bottom:12px;
+padding:0 12px;
+border:none;
+border-radius:14px;
+background:#d9d9d9;
+font-size:15px;
+}
+ 
+input[type="text"]:focus,
+input[type="tel"]:focus{
+outline:2px solid #2cb5e8;
+}
+ 
+.documentos{
+margin-top:6px;
+display:grid;
+gap:8px;
+}
+ 
+.doc{
+position:relative;
+display:flex;
+align-items:center;
+gap:10px;
+padding:6px 12px;
+min-height:48px;
+background:#d9d9d9;
+border-radius:10px;
+cursor:pointer;
+text-align:left;
+transition:.3s;
+}
+ 
+.doc:hover{
+background:#bdbdbd;
+}
+ 
+.doc .mas{
+flex:none;
+width:32px;
+height:32px;
+border-radius:50%;
+background:#fff;
+display:grid;
+place-items:center;
+}
+ 
+.doc .mas svg{
+width:22px;
+height:22px;
+fill:#2cb5e8;
+}
+ 
+.doc .texto{
+flex:1;
+line-height:1.1;
+}
+ 
+.doc .nombre{
+display:block;
+font-size:15px;
+}
+ 
+.doc .estado{
+display:block;
+font-size:12px;
+margin-top:2px;
+}
+ 
+.doc .camara{
+flex:none;
+width:30px;
+height:30px;
+border-radius:50%;
+background:#fff;
+display:grid;
+place-items:center;
+}
+ 
+.doc .camara svg{
+width:20px;
+height:20px;
+}
+ 
+.doc input[type="file"]{
+position:absolute;
+width:1px;
+height:1px;
+opacity:0;
+}
+ 
+.doc:focus-within{
+outline:2px solid #2cb5e8;
+}
+ 
+.doc.listo .estado{
+color:#0a7a3a;
+font-weight:bold;
+}
+ 
+.doc.listo .mas svg{
+fill:#0a7a3a;
+}
+ 
+button{
+width:160px;
+padding:12px;
+margin:auto 0 0 auto;
+display:block;
+background:#d9d9d9;
+border:none;
+border-radius:5px;
+font-size:20px;
+cursor:pointer;
+transition:.3s;
+}
+ 
+button:hover{
+background:#bdbdbd;
+}
+ 
+/* El botón queda abajo y siempre separado de los documentos */
+.contenido{ overflow-y:auto; scrollbar-width:none; }
+.contenido::-webkit-scrollbar{ display:none; }
+#formConductor{ flex:1; display:flex; flex-direction:column; }
+#formConductor .documentos{ margin-bottom:24px; }
+#formConductor button{ margin-top:auto; margin-bottom:6px; }
+ 
+</style>
+ 
+</head>
+ 
+<body>
+ 
+<div class="telefono">
+ 
+<div class="onda1"></div>
+<div class="onda2"></div>
+ 
+<div class="contenido">
+ 
+<h2>DATOS PERSONALES Y DOCUMENTOS DEL CONDUCTOR</h2>
+<p class="subtitulo">Sube fotos claras y legibles de tus documentos.</p>
+ 
+<form id="formConductor">
+ 
+<label class="campo" for="documento">Número de Documento</label>
+<input type="text" id="documento" name="documento" inputmode="numeric" autocomplete="off" required>
+ 
+<label class="campo" for="celular">Número de celular</label>
+<input type="tel" id="celular" name="celular" autocomplete="tel" required>
+ 
+<div class="documentos" id="documentos"></div>
+ 
+<button type="submit">SIGUIENTE</button>
+ 
+</form>
+ 
+</div>
+ 
+</div>
+ 
+<script>
+ 
+const documentos = [
+  { id: "cedula",   nombre: "Cédula" },
+  { id: "licencia", nombre: "Licencia de Conducción" },
+  { id: "soat",     nombre: "SOAT vigente" },
+  { id: "revision", nombre: "Revisión técnico-mecánica" },
+  { id: "moto",     nombre: "Foto del Mototaxi" }
+];
+ 
+const iconoMas = '<svg viewBox="0 0 24 24"><path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/></svg>';
+const iconoCamara = '<svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+ 
+const fotos = {};        // fotos guardadas (reducidas) por documento
+const pendientes = {};   // procesos de reducción en curso
+ 
+function comprimir(archivo){
+  return new Promise(function(ok){
+    const lector = new FileReader();
+    lector.onload = function(){
+      const img = new Image();
+      img.onload = function(){
+        const k = Math.min(1, 700 / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * k);
+        c.height = Math.round(img.height * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        ok(c.toDataURL("image/jpeg", 0.7));
+      };
+      img.onerror = function(){ ok(null); };
+      img.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+ 
+const contenedor = document.getElementById("documentos");
+ 
+documentos.forEach(function(d){
+  const label = document.createElement("label");
+  label.className = "doc";
+  label.innerHTML =
+    '<span class="mas">' + iconoMas + '</span>' +
+    '<span class="texto">' +
+      '<span class="nombre">' + d.nombre + '</span>' +
+      '<span class="estado">Subir Foto</span>' +
+    '</span>' +
+    '<span class="camara">' + iconoCamara + '</span>' +
+    '<input type="file" name="' + d.id + '" accept="image/*" required>';
+ 
+  const input = label.querySelector("input");
+  input.addEventListener("change", function(){
+    if (input.files.length) {
+      label.classList.add("listo");
+      label.querySelector(".estado").textContent = "Foto cargada ✓";
+      pendientes[d.id] = comprimir(input.files[0]).then(function(url){ fotos[d.id] = url; });
+    }
+  });
+ 
+  contenedor.appendChild(label);
+});
+ 
+document.getElementById("formConductor").addEventListener("submit", function(e){
+  e.preventDefault();
+  Promise.all(Object.values(pendientes)).then(function(){
+    try {
+      localStorage.setItem("tuk_docs", JSON.stringify(fotos));
+      localStorage.setItem("tuk_datos", JSON.stringify({
+        documento: document.getElementById("documento").value,
+        celular: document.getElementById("celular").value
+      }));
+      localStorage.setItem("tuk_enlinea", "1");
+      if (!localStorage.getItem("tuk_registro")) {
+        localStorage.setItem("tuk_registro", new Date().toLocaleDateString("es-CO", { day:"numeric", month:"long", year:"numeric" }));
+      }
+    } catch(err) { console.warn("No se pudieron guardar los datos:", err); }
+    window.location.replace("inicio-conductor.html");
+  });
+});
+ 
+</script>
+ 
+<script>
+// regenerar chats: al entrar por el registro, las conversaciones vuelven a su estado inicial
+try { sessionStorage.removeItem("tuk_chats"); } catch(e){}
+</script>
+ 
+<script>
+var _c=TUK.cuenta()||{};if(_c.telefono)document.getElementById("celular").value=_c.telefono;
+document.getElementById("formConductor").addEventListener("submit",function(){var c=TUK.cuenta()||{};c.telefono=document.getElementById("celular").value;TUK.guardar(c)});
+</script>
+</body>
+ 
+</html>

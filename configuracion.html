@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Configuración</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;
+height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);
+height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;text-decoration:none;}
+.titulo-pag{flex:1;font-size:18px;font-weight:bold;color:#0d2c54;}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#f7c531;border:2px solid #0a4aa8;display:grid;place-items:center;font-size:20px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;padding:12px;}
+.tarjeta h3{font-size:13px;color:#0d2c54;margin-bottom:10px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+</style>
+<style>
+.grupo{ padding:4px 0; }
+.grupo > h3{ padding:10px 12px 4px; margin:0; font-size:12px; color:#0a4aa8; }
+
+.fila{ display:flex; align-items:center; gap:10px; padding:10px 12px; }
+.fila + .fila{ border-top:1px solid #f0f0f0; }
+.fila .texto{ flex:1; }
+.fila b{ display:block; font-size:12px; color:#111; font-weight:bold; }
+.fila small{ font-size:9px; color:#666; }
+.fila.clic{ cursor:pointer; transition:.3s; }
+.fila.clic:hover{ background:#eef6fb; }
+.flecha{ font-size:20px; color:#555; }
+
+.switch{ flex:none; width:44px; height:25px; border:none; border-radius:13px; background:#bbb; position:relative; cursor:pointer; transition:.3s; }
+.switch::after{ content:""; position:absolute; top:3px; left:3px; width:19px; height:19px; border-radius:50%; background:#fff; transition:.3s; }
+.switch.on{ background:#19b34a; }
+.switch.on::after{ left:22px; }
+
+select{ padding:6px 8px; border:1px solid #ddd; border-radius:8px; background:#fff; font-size:12px; }
+
+.version{ margin:6px 0 4px; text-align:center; font-size:10px; color:#888; }
+.toast{ position:absolute; left:50%; bottom:80px; transform:translateX(-50%); padding:7px 14px; border-radius:16px; background:#0d2c54; color:#fff; font-size:11px; opacity:0; transition:opacity .3s; pointer-events:none; }
+.toast.visible{ opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="perfil.html" aria-label="Volver">‹</a>
+<div class="titulo-pag">Configuración</div>
+<div class="avatar">👤</div>
+</div>
+
+<div class="scroll">
+
+<div class="tarjeta grupo">
+<h3>🔔 Notificaciones</h3>
+<div class="fila">
+<span class="texto"><b>Nuevas solicitudes</b><small>Avisos cuando llegue un servicio</small></span>
+<button class="switch" data-k="solicitudes" aria-label="Nuevas solicitudes"></button>
+</div>
+<div class="fila">
+<span class="texto"><b>Mensajes</b><small>Mensajes de pasajeros y soporte</small></span>
+<button class="switch" data-k="mensajes" aria-label="Mensajes"></button>
+</div>
+<div class="fila">
+<span class="texto"><b>Promociones y novedades</b><small>Ofertas y noticias de TÜK</small></span>
+<button class="switch" data-k="promos" aria-label="Promociones"></button>
+</div>
+<div class="fila">
+<span class="texto"><b>Sonido de alertas</b><small>Reproducir sonido al recibir avisos</small></span>
+<button class="switch" data-k="sonido" aria-label="Sonido"></button>
+</div>
+</div>
+
+<div class="tarjeta grupo">
+<h3>⚙️ Preferencias</h3>
+<div class="fila">
+<span class="texto"><b>Idioma</b><small>Idioma de la aplicación</small></span>
+<select id="idioma">
+<option value="es">Español</option>
+<option value="en">English</option>
+</select>
+</div>
+<div class="fila">
+<span class="texto"><b>Ahorro de datos</b><small>Reduce el consumo del mapa y las imágenes</small></span>
+<button class="switch" data-k="ahorro" aria-label="Ahorro de datos"></button>
+</div>
+</div>
+
+<div class="tarjeta grupo">
+<h3>🔒 Cuenta y seguridad</h3>
+<div class="fila clic" id="cambiar">
+<span class="texto"><b>Cambiar contraseña</b><small>Actualiza tu clave de acceso</small></span><span class="flecha">›</span>
+</div>
+<div class="fila clic" data-aviso="Privacidad y términos: próximamente.">
+<span class="texto"><b>Privacidad y términos</b><small>Cómo cuidamos tus datos</small></span><span class="flecha">›</span>
+</div>
+<div class="fila clic" id="editar">
+<span class="texto"><b>Editar perfil</b><small>Nombre, foto y descripción</small></span><span class="flecha">›</span>
+</div>
+</div>
+
+<p class="version">TÜK Conductor · Versión 1.0.0</p>
+
+</div>
+
+<div class="toast" id="toast">Guardado ✓</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+</div>
+
+<script>
+
+const BASE = { solicitudes:true, mensajes:true, promos:false, sonido:true, ahorro:false, idioma:"es" };
+let config = Object.assign({}, BASE);
+try { Object.assign(config, JSON.parse(localStorage.getItem("tuk_config") || "{}")); } catch(e){}
+
+const toast = document.getElementById("toast");
+let temporizador;
+
+function guardar(){
+  try { localStorage.setItem("tuk_config", JSON.stringify(config)); } catch(e){}
+  toast.classList.add("visible");
+  clearTimeout(temporizador);
+  temporizador = setTimeout(function(){ toast.classList.remove("visible"); }, 1200);
+}
+
+document.querySelectorAll(".switch").forEach(function(sw){
+  sw.classList.toggle("on", !!config[sw.dataset.k]);
+  sw.addEventListener("click", function(){
+    config[sw.dataset.k] = !config[sw.dataset.k];
+    sw.classList.toggle("on", config[sw.dataset.k]);
+    guardar();
+    if (sw.dataset.k === "sonido") TUK.beep();
+  });
+});
+
+const idioma = document.getElementById("idioma");
+idioma.value = config.idioma;
+idioma.addEventListener("change", function(){
+  config.idioma = idioma.value;
+  guardar();
+  setTimeout(function(){ location.reload(); }, 350);
+});
+
+document.querySelectorAll("[data-aviso]").forEach(function(el){
+  el.addEventListener("click", function(){ alert(el.dataset.aviso); });
+});
+
+document.getElementById("editar").addEventListener("click", function(){
+  window.location.href = "editar-perfil.html";
+});
+
+</script>
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+<script>
+document.getElementById("cambiar").addEventListener("click",function(){var c=TUK.cuenta()||{},x=TUK.t,a=prompt(x("Contraseña actual"));if(a===null)return;
+if(a!==c.contrasena)return alert(x("La contraseña actual no es correcta."));var n=prompt(x("Nueva contraseña (mínimo 6 caracteres)"));if(n===null)return;
+if(n.length<6)return alert(x("Mínimo 6 caracteres."));c.contrasena=n;TUK.guardar(c);alert(x("Contraseña actualizada ✓"))});
+</script>
+</body>
+</html>

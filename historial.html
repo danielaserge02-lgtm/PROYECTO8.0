@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<script src="tuk.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+
+<title>Historial</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+height:100dvh;
+background:#52c6f4;
+}
+
+.telefono{
+width:330px;
+height:min(700px,96vh);
+height:min(700px,96dvh);
+background:#f3f6f9;
+border-radius:30px;
+position:relative;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+display:flex;
+flex-direction:column;
+}
+
+/* Cabecera */
+
+.cabecera{
+position:relative;
+z-index:2;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 14px 10px;
+background:#fff;
+box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.hamburguesa{
+border:none;
+background:none;
+font-size:24px;
+cursor:pointer;
+}
+
+.logo{
+font-size:34px;
+font-weight:bold;
+font-style:italic;
+color:#0a4aa8;
+letter-spacing:1px;
+}
+
+.derecha{ display:flex; align-items:center; gap:10px; }
+
+.campana{ position:relative; font-size:20px; }
+
+.campana::after{
+content:"";
+position:absolute;
+top:0;
+right:-2px;
+width:8px;
+height:8px;
+background:#e23b3b;
+border-radius:50%;
+}
+
+.avatar{
+width:38px;
+height:38px;
+border-radius:50%;
+background:#f7c531;
+border:2px solid #0a4aa8;
+display:grid;
+place-items:center;
+font-size:20px;
+overflow:hidden;
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* Contenido con scroll */
+
+.scroll{
+flex:1;
+overflow-y:auto;
+padding:12px 12px 14px;
+scrollbar-width:none;
+}
+
+.scroll::-webkit-scrollbar{ display:none; }
+
+.titulo-fila{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+margin-bottom:12px;
+}
+
+h1{ font-size:22px; color:#0d2c54; }
+.titulo-fila p{ margin-top:2px; font-size:10px; color:#555; }
+
+.filtro{ position:relative; }
+
+.filtro > button{
+padding:8px 12px;
+border:1px solid #ddd;
+border-radius:10px;
+background:#fff;
+font-size:12px;
+cursor:pointer;
+}
+
+.opciones{
+display:none;
+position:absolute;
+right:0;
+top:38px;
+z-index:5;
+width:110px;
+background:#fff;
+border-radius:10px;
+box-shadow:0 4px 14px rgba(0,0,0,.2);
+overflow:hidden;
+}
+
+.opciones.abierto{ display:block; }
+
+.opciones button{
+display:block;
+width:100%;
+padding:9px 12px;
+border:none;
+background:#fff;
+font-size:12px;
+text-align:left;
+cursor:pointer;
+}
+
+.opciones button:hover,
+.opciones button.activo{ background:#e6f3fb; font-weight:bold; }
+
+/* Estadísticas */
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+padding:10px 4px;
+background:#fff;
+border-radius:14px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+margin-bottom:14px;
+text-align:center;
+}
+
+.stat{ padding:0 3px; }
+.stat + .stat{ border-left:1px solid #eee; }
+
+.stat .icono{
+width:22px;
+height:22px;
+margin:0 auto 5px;
+border-radius:50%;
+display:grid;
+place-items:center;
+font-size:11px;
+color:#fff;
+}
+
+.stat .etiqueta{ font-size:8px; color:#555; line-height:1.1; }
+.stat .valor{ margin-top:4px; font-size:14px; font-weight:bold; color:#0d2c54; }
+.stat .valor.verde{ color:#19b34a; }
+
+/* Lista de viajes */
+
+.dia{
+margin:4px 0 8px;
+font-size:12px;
+font-weight:bold;
+color:#0d2c54;
+}
+
+.viaje{
+display:flex;
+gap:8px;
+padding:8px;
+margin-bottom:8px;
+background:#fff;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.mini{
+position:relative;
+flex:none;
+width:62px;
+height:70px;
+border-radius:8px;
+background-color:#e8edf1;
+background-image:url("mapa.png");
+background-size:380px auto;
+overflow:hidden;
+}
+
+.mini svg{ position:absolute; inset:0; width:100%; height:100%; }
+
+.datos{ flex:1; min-width:0; font-size:9px; color:#222; }
+
+.hora{ font-size:10px; font-weight:bold; margin-bottom:3px; }
+
+.punto-fila{
+display:flex;
+align-items:center;
+gap:5px;
+margin-bottom:3px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.dot{ flex:none; width:7px; height:7px; border-radius:50%; }
+.dot.verde{ background:#19b34a; }
+.dot.rojo{ background:#e23b3b; }
+
+.fecha{ margin-top:5px; font-size:8px; color:#777; }
+
+.lado{
+flex:none;
+width:58px;
+display:flex;
+flex-direction:column;
+align-items:flex-end;
+justify-content:space-between;
+}
+
+.precio{
+padding:4px 6px;
+border-radius:8px;
+background:#dff5e6;
+color:#0a7a3a;
+font-size:12px;
+font-weight:bold;
+text-align:center;
+}
+
+.precio small{ display:block; font-size:7px; font-weight:normal; }
+
+.precio.nequi{ background:#efe3fb; color:#6b2bb5; }
+
+.medidas{ font-size:8px; color:#555; white-space:nowrap; }
+.medidas span + span{ margin-left:6px; padding-left:6px; border-left:1px solid #ccc; }
+
+/* Menú inferior */
+
+.menu{
+position:relative;
+z-index:2;
+display:flex;
+justify-content:space-around;
+padding:8px 0 10px;
+background:#fff;
+box-shadow:0 -2px 10px rgba(0,0,0,.1);
+}
+
+.menu a{
+position:relative;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:2px;
+font-size:10px;
+color:#555;
+text-decoration:none;
+}
+
+.menu a .ico{ font-size:20px; }
+.menu a.activo{ color:#1a73e8; font-weight:bold; }
+
+.menu .badge{
+position:absolute;
+top:-4px;
+right:-2px;
+min-width:15px;
+height:15px;
+padding:0 4px;
+border-radius:8px;
+background:#e23b3b;
+color:#fff;
+font-size:9px;
+display:grid;
+place-items:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<button class="hamburguesa" aria-label="Menú">☰</button>
+<div class="logo">TÜK</div>
+<div class="derecha">
+<span class="campana">🔔</span>
+<div class="avatar">👤</div>
+</div>
+</div>
+
+<div class="scroll">
+
+<div class="titulo-fila">
+<div>
+<h1>Historial</h1>
+<p>Aquí puedes ver tus carreras realizadas</p>
+</div>
+
+<div class="filtro">
+<button id="btnFiltro">📅 Filtrar ▾</button>
+<div class="opciones" id="opciones">
+<button class="activo" data-f="todos">Todos</button>
+<button data-f="Efectivo">Efectivo</button>
+<button data-f="Nequi">Nequi</button>
+</div>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat">
+<div class="icono" style="background:#19b34a;">$</div>
+<div class="etiqueta">Ganancias totales</div>
+<div class="valor verde">$352.000</div>
+</div>
+<div class="stat">
+<div class="icono" style="background:#1a73e8;">🏍</div>
+<div class="etiqueta">Total de viajes</div>
+<div class="valor">62</div>
+</div>
+<div class="stat">
+<div class="icono" style="background:#f7b500;">★</div>
+<div class="etiqueta">Calificación promedio</div>
+<div class="valor">4.8 <span style="color:#f7b500;">★</span></div>
+</div>
+<div class="stat">
+<div class="icono" style="background:#7b3fe4;">⏱</div>
+<div class="etiqueta">Tiempo en línea</div>
+<div class="valor">28h 45m</div>
+</div>
+</div>
+
+<div id="lista"></div>
+
+</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html" class="activo"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+</div>
+
+<script>
+
+const viajes = [
+  { dia:"Hoy", hora:"8:30 a.m.",  de:"Calle 2 Norte #15-30", a:"Carrera 6A #9-45",  fecha:"12 de may, 2024", precio:"$7.000", pago:"Efectivo", km:"12.4 km", min:"10 min", pos:"-40px -30px" },
+  { dia:"Hoy", hora:"10:15 a.m.", de:"Calle 5 #1-20",        a:"Calle 5 Norte #8-60", fecha:"12 de may, 2024", precio:"$6.500", pago:"Efectivo", km:"9.8 km",  min:"15 min", pos:"-120px -60px" },
+  { dia:"Hoy", hora:"1:20 p.m.",  de:"Calle 1B #3-15",       a:"Carrera 6B #10-25", fecha:"12 de may, 2024", precio:"$8.000", pago:"Efectivo", km:"13.7 km", min:"20 min", pos:"-200px -100px" },
+  { dia:"Hoy", hora:"3:45 p.m.",  de:"Carrera 4 #2-10",      a:"Calle 2 Norte #7-50", fecha:"12 de may, 2024", precio:"$6.000", pago:"Efectivo", km:"8.3 km",  min:"10 min", pos:"-80px -140px" },
+  { dia:"Ayer - 11 mayo 2024", hora:"9:05 a.m.", de:"Calle 1 Norte #12-40", a:"Carrera 5A #6-30", fecha:"11 de may, 2024", precio:"$7.500", pago:"Nequi", km:"11.2 km", min:"14 min", pos:"-160px -20px" }
+];
+
+const ruta = '<svg viewBox="0 0 62 70"><polyline points="8,10 8,26 30,26 30,44 52,44 52,60" fill="none" stroke="#e23b3b" stroke-width="1.5"/><circle cx="8" cy="10" r="3" fill="#19b34a"/><circle cx="52" cy="60" r="3" fill="#e23b3b"/></svg>';
+
+const lista = document.getElementById("lista");
+let filtro = "todos";
+
+function pintar(){
+  let html = "", diaActual = "";
+  viajes.forEach(function(v){
+    if (filtro !== "todos" && v.pago !== filtro) return;
+    if (v.dia !== diaActual){
+      diaActual = v.dia;
+      html += '<div class="dia">' + v.dia + '</div>';
+    }
+    html +=
+      '<div class="viaje">' +
+        '<div class="mini" style="background-position:' + v.pos + ';">' + ruta + '</div>' +
+        '<div class="datos">' +
+          '<div class="hora">' + v.hora + '</div>' +
+          '<div class="punto-fila"><span class="dot verde"></span>' + v.de + '</div>' +
+          '<div class="punto-fila"><span class="dot rojo"></span>' + v.a + '</div>' +
+          '<div class="fecha">📅 ' + v.fecha + '</div>' +
+        '</div>' +
+        '<div class="lado">' +
+          '<div class="precio' + (v.pago === "Nequi" ? " nequi" : "") + '">' + v.precio + '<small>' + v.pago + '</small></div>' +
+          '<div class="medidas"><span>' + v.km + '</span><span>' + v.min + '</span></div>' +
+        '</div>' +
+      '</div>';
+  });
+  lista.innerHTML = html || '<p style="text-align:center;font-size:12px;color:#777;margin-top:20px;">No hay viajes con este filtro.</p>';
+}
+
+const opciones = document.getElementById("opciones");
+
+document.getElementById("btnFiltro").addEventListener("click", function(){
+  opciones.classList.toggle("abierto");
+});
+
+opciones.querySelectorAll("button").forEach(function(b){
+  b.addEventListener("click", function(){
+    filtro = b.dataset.f;
+    opciones.querySelectorAll("button").forEach(function(x){ x.classList.remove("activo"); });
+    b.classList.add("activo");
+    opciones.classList.remove("abierto");
+    pintar();
+  });
+});
+
+pintar();
+
+</script>
+
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+</body>
+
+</html>

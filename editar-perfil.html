@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Editar perfil</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;
+height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);
+height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;text-decoration:none;}
+.titulo-pag{flex:1;font-size:18px;font-weight:bold;color:#0d2c54;}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#f7c531;border:2px solid #0a4aa8;display:grid;place-items:center;font-size:20px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;padding:12px;}
+.tarjeta h3{font-size:13px;color:#0d2c54;margin-bottom:10px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+input[type=date]{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:13px;outline:none}input[type=tel]{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#fff;font-size:13px;outline:none}</style>
+<style>
+.centro{ text-align:center; }
+.foto-edit{ width:96px; height:96px; margin:4px auto 10px; border-radius:50%; border:3px solid #0a4aa8; background:#f7c531; overflow:hidden; }
+.foto-edit img{ width:100%; height:100%; object-fit:cover; }
+.cambiar{ display:inline-block; padding:8px 14px; border-radius:10px; background:#d6ecf9; color:#0a4aa8; font-size:11px; font-weight:bold; cursor:pointer; }
+.cambiar:hover{ background:#bfe0f3; }
+
+label.campo{ display:block; margin:0 0 5px 2px; font-size:11px; font-weight:bold; color:#0d2c54; }
+input[type="text"], textarea{ width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; font-size:13px; outline:none; resize:none; }
+input[type="text"]:focus, textarea:focus{ border-color:#1a73e8; }
+textarea{ height:84px; line-height:1.35; }
+.cont{ margin:3px 2px 12px; text-align:right; font-size:9px; color:#888; }
+.sep{ height:12px; }
+
+.guardar{ width:100%; padding:12px; border:none; border-radius:10px; background:#1a73e8; color:#fff; font-size:14px; font-weight:bold; cursor:pointer; transition:.3s; }
+.guardar:hover{ background:#155fc0; }
+.cancelar{ display:block; margin-top:10px; text-align:center; font-size:12px; color:#555; text-decoration:none; }
+.msg{ margin-top:10px; text-align:center; font-size:12px; min-height:16px; }
+.msg.ok{ color:#0a7a3a; font-weight:bold; }
+.msg.error{ color:#c0392b; }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="perfil.html" aria-label="Volver">‹</a>
+<div class="titulo-pag">Editar perfil</div>
+<div class="avatar">👤</div>
+</div>
+
+<div class="scroll">
+
+<div class="tarjeta centro">
+<div class="foto-edit"><img id="prev" alt="" style="display:none"><span id="prevE" style="display:grid;place-items:center;height:100%;font-size:52px">👤</span></div>
+<label class="cambiar">📷 Cambiar foto<input type="file" id="archivo" accept="image/*" hidden></label>
+</div>
+
+<div class="tarjeta">
+<label class="campo" for="nombre">Nombre completo</label>
+<input type="text" id="nombre" maxlength="40" autocomplete="off">
+<div class="sep"></div>
+<label class="campo" for="desc">Descripción</label>
+<textarea id="desc" maxlength="120" placeholder="Cuéntales a tus pasajeros algo sobre ti"></textarea>
+<div class="cont" id="cont">0/120</div>
+</div>
+
+<div class="tarjeta"><h3>Datos de contacto</h3>
+<label class="campo" for="fMail">Correo</label><input type="text" id="fMail" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fCel">Celular</label><input type="tel" id="fCel" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fNac">Fecha de nacimiento</label><input type="date" id="fNac" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fCiu">Ciudad</label><input type="text" id="fCiu" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fEN">Nombre del contacto</label><input type="text" id="fEN" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fET">Teléfono del contacto</label><input type="tel" id="fET" maxlength="60" placeholder=""><div class="sep"></div>
+</div>
+<div class="tarjeta"><h3>🏍 Mi vehículo</h3>
+<label class="campo" for="fMod">Vehículo (modelo y marca)</label><input type="text" id="fMod" maxlength="60" placeholder="Ej: Mototaxi TVS King"><div class="sep"></div>
+<label class="campo" for="fCol">Color</label><input type="text" id="fCol" maxlength="60" placeholder=""><div class="sep"></div>
+<label class="campo" for="fPla">Placa</label><input type="text" id="fPla" maxlength="60" placeholder="ABC-123"><div class="sep"></div>
+<label class="campo" for="fAni">Año</label><input type="text" id="fAni" maxlength="60" placeholder="2023"><div class="sep"></div>
+</div>
+<button class="guardar" id="guardar">Guardar cambios</button>
+<a class="cancelar" href="perfil.html">Cancelar</a>
+<div class="msg" id="msg"></div>
+
+</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+</div>
+
+<script>
+
+const NOMBRE_BASE = "Carlos Andrés";
+const DESC_BASE = "Conductor TÜK comprometido con un servicio seguro y puntual.";
+
+let perfil = {};
+try { perfil = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+
+const nombre = document.getElementById("nombre");
+const desc = document.getElementById("desc");
+const cont = document.getElementById("cont");
+const prev = document.getElementById("prev");
+const msg = document.getElementById("msg");
+let nuevaFoto = null;
+
+const C=TUK.cuenta()||{};let V={};try{V=JSON.parse(localStorage.getItem("tuk_vehiculo")||"{}")}catch(e){}
+nombre.value = C.nombre || NOMBRE_BASE;
+[["fMail",C.correo],["fCel",C.telefono],["fNac",C.fecha],["fCiu",C.ciudad],["fEN",C.emerNombre],["fET",C.emerTel],["fMod",V.modelo],["fCol",V.color],["fPla",V.placa],["fAni",V.anio]].forEach(function(p){document.getElementById(p[0]).value=p[1]||""});
+desc.value = perfil.descripcion || DESC_BASE;
+if (perfil.foto) { prev.src = perfil.foto; prev.style.display = "block"; document.getElementById("prevE").style.display = "none"; }
+
+function contar(){ cont.textContent = desc.value.length + "/120"; }
+desc.addEventListener("input", contar);
+contar();
+
+// Recorta la foto en cuadrado y la reduce para poder guardarla
+function recortar(archivo){
+  return new Promise(function(ok){
+    const lector = new FileReader();
+    lector.onload = function(){
+      const img = new Image();
+      img.onload = function(){
+        const lado = Math.min(img.width, img.height);
+        const c = document.createElement("canvas");
+        c.width = c.height = 320;
+        c.getContext("2d").drawImage(img, (img.width - lado) / 2, (img.height - lado) / 2, lado, lado, 0, 0, 320, 320);
+        ok(c.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = function(){ ok(null); };
+      img.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+
+document.getElementById("archivo").addEventListener("change", function(e){
+  if (!e.target.files.length) return;
+  recortar(e.target.files[0]).then(function(url){
+    if (url) { nuevaFoto = url; prev.src = url; prev.style.display = "block"; document.getElementById("prevE").style.display = "none"; }
+  });
+});
+
+document.getElementById("guardar").addEventListener("click", function(){
+  const n = nombre.value.trim();
+  if (!n) {
+    msg.className = "msg error";
+    msg.textContent = "El nombre no puede estar vacío.";
+    return;
+  }
+
+  const q=function(i){return document.getElementById(i).value.trim()};
+  if (!/^\S+@\S+\.\S+$/.test(q("fMail"))) { msg.className = "msg error"; msg.textContent = TUK.t("Escribe un correo válido."); return; }
+  const cu=TUK.cuenta()||{};Object.assign(cu,{nombre:n,correo:q("fMail").toLowerCase(),telefono:q("fCel"),fecha:q("fNac"),ciudad:q("fCiu"),emerNombre:q("fEN"),emerTel:q("fET")});TUK.guardar(cu);
+  localStorage.setItem("tuk_vehiculo",JSON.stringify({modelo:q("fMod"),color:q("fCol"),placa:q("fPla").toUpperCase(),anio:q("fAni")}));
+  const datos = { descripcion:desc.value.trim(), foto:nuevaFoto || perfil.foto || null };
+  try {
+    localStorage.setItem("tuk_perfil", JSON.stringify(datos));
+  } catch(e) {
+    msg.className = "msg error";
+    msg.textContent = "No se pudo guardar la foto. Prueba con otra imagen.";
+    return;
+  }
+
+  msg.className = "msg ok";
+  msg.textContent = "✓ Cambios guardados";
+  setTimeout(function(){ window.location.href = "perfil.html"; }, 800);
+});
+
+</script>
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+</body>
+</html>

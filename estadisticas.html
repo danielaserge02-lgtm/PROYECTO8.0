@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script src="tuk.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Estadísticas</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{display:flex;justify-content:center;align-items:center;height:100vh;
+height:100dvh;background:#52c6f4;}
+.telefono{width:330px;height:min(700px,96vh);
+height:min(700px,96dvh);background:#f3f6f9;border-radius:30px;position:relative;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+
+.cabecera{position:relative;z-index:2;display:flex;align-items:center;gap:8px;padding:14px 14px 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.atras{border:none;background:none;font-size:32px;line-height:1;color:#0a4aa8;cursor:pointer;padding:0 6px 4px 0;text-decoration:none;}
+.titulo-pag{flex:1;font-size:18px;font-weight:bold;color:#0d2c54;}
+.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#f7c531;border:2px solid #0a4aa8;display:grid;place-items:center;font-size:20px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.scroll{flex:1;overflow-y:auto;padding:12px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.tarjeta{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;padding:12px;}
+.tarjeta h3{font-size:13px;color:#0d2c54;margin-bottom:10px;}
+
+.menu{position:relative;z-index:2;display:flex;justify-content:space-around;padding:8px 0 10px;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.1);}
+.menu a{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#555;text-decoration:none;}
+.menu a .ico{font-size:20px;}
+.menu a.activo{color:#1a73e8;font-weight:bold;}
+.menu .badge{position:absolute;top:-4px;right:-2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#e23b3b;color:#fff;font-size:9px;display:grid;place-items:center;}
+</style>
+<style>
+.rejilla{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.dato{ background:#fff; border-radius:14px; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+.dato .icono{ width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:13px; color:#fff; margin-bottom:6px; }
+.dato small{ display:block; font-size:10px; color:#555; }
+.dato b{ display:block; margin-top:3px; font-size:18px; color:#0d2c54; }
+.dato b.verde{ color:#19b34a; }
+
+.pestanas{ display:flex; gap:6px; margin-bottom:12px; }
+.pestana{ padding:6px 12px; border:1px solid #ddd; border-radius:14px; background:#fff; font-size:10px; cursor:pointer; }
+.pestana.activo{ background:#0a4aa8; border-color:#0a4aa8; color:#fff; font-weight:bold; }
+
+.grafica{ display:flex; align-items:flex-end; justify-content:space-between; height:130px; padding-top:18px; }
+.col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+.col .valor{ font-size:8px; color:#555; margin-bottom:3px; }
+.col .barra{ width:20px; border-radius:6px 6px 0 0; background:#bfe0f3; transition:height .4s; }
+.col.hoy .barra{ background:#1a73e8; }
+.col .dia{ margin-top:5px; font-size:9px; color:#555; }
+
+.mejor{ display:flex; align-items:center; gap:10px; }
+.mejor .copa{ font-size:26px; }
+.mejor b{ display:block; font-size:12px; color:#0d2c54; }
+.mejor small{ font-size:10px; color:#555; }
+</style>
+</head>
+<body>
+
+<div class="telefono">
+
+<div class="cabecera">
+<a class="atras" href="perfil.html" aria-label="Volver">‹</a>
+<div class="titulo-pag">Estadísticas</div>
+<div class="avatar">👤</div>
+</div>
+
+<div class="scroll">
+
+<div class="rejilla">
+<div class="dato"><div class="icono" style="background:#19b34a;">$</div><small>Ganancias totales</small><b class="verde">$352.000</b></div>
+<div class="dato"><div class="icono" style="background:#1a73e8;">🏍</div><small>Viajes realizados</small><b>62</b></div>
+<div class="dato"><div class="icono" style="background:#7b3fe4;">⏱</div><small>Tiempo en línea</small><b>28h 45m</b></div>
+<div class="dato"><div class="icono" style="background:#f7b500;">📈</div><small>Promedio por viaje</small><b>$5.677</b></div>
+</div>
+
+<div class="tarjeta">
+<h3>Esta semana</h3>
+<div class="pestanas">
+<button class="pestana activo" data-v="ganancias">Ganancias</button>
+<button class="pestana" data-v="viajes">Viajes</button>
+</div>
+<div class="grafica" id="grafica"></div>
+</div>
+
+<div class="tarjeta mejor">
+<span class="copa">🏆</span>
+<div><b>Tu mejor día: Sábado</b><small>$73.000 en 13 viajes</small></div>
+</div>
+
+</div>
+
+<nav class="menu">
+<a href="inicio-conductor.html"><span class="ico">🏠</span>Inicio</a>
+<a href="historial.html"><span class="ico">📋</span>Historial</a>
+<a href="mensajes.html"><span class="ico">💬</span>Mensajes<span class="badge">3</span></a>
+<a href="perfil.html" class="activo"><span class="ico">👤</span>Perfil</a>
+</nav>
+
+</div>
+
+<script>
+
+const dias = ["Lun","Mar","Mié","Jue","Vie","Sáb","Hoy"];
+const datos = {
+  ganancias: [42000, 55000, 38000, 61000, 48000, 73000, 35000],
+  viajes:    [7, 9, 6, 10, 8, 13, 9]
+};
+
+function pintar(tipo){
+  const v = datos[tipo];
+  const max = Math.max.apply(null, v);
+  document.getElementById("grafica").innerHTML = v.map(function(n, i){
+    const etiqueta = tipo === "ganancias" ? "$" + (n / 1000) + "k" : n;
+    return '<div class="col' + (i === 6 ? " hoy" : "") + '">' +
+      '<span class="valor">' + etiqueta + '</span>' +
+      '<div class="barra" style="height:' + Math.round(n / max * 80) + 'px;"></div>' +
+      '<span class="dia">' + dias[i] + '</span></div>';
+  }).join("");
+}
+
+document.querySelectorAll(".pestana").forEach(function(p){
+  p.addEventListener("click", function(){
+    document.querySelectorAll(".pestana").forEach(function(x){ x.classList.remove("activo"); });
+    p.classList.add("activo");
+    pintar(p.dataset.v);
+  });
+});
+
+pintar("ganancias");
+
+</script>
+
+<script>
+// Aplica en todas las pantallas los datos guardados desde "Editar perfil"
+(function(){
+  let p = {};
+  try { p = JSON.parse(localStorage.getItem("tuk_perfil") || "{}"); } catch(e){}
+  if (p.foto) document.querySelectorAll(".avatar img, .foto-grande img").forEach(function(i){ i.src = p.foto; });
+  if (p.nombre) document.querySelectorAll("[data-nombre]").forEach(function(e){ e.textContent = p.nombre; });
+  if (p.descripcion) document.querySelectorAll("[data-descripcion]").forEach(function(e){ e.textContent = p.descripcion; });
+})();
+</script>
+
+<script>
+// Globo rojo del menú: cuántas conversaciones tienen mensajes sin leer
+(function(){
+  var n = 3;
+  try {
+    var c = JSON.parse(sessionStorage.getItem("tuk_chats"));
+    if (c && c.length) n = c.filter(function(x){ return x.nuevos > 0; }).length;
+  } catch(e){}
+  document.querySelectorAll(".menu .badge").forEach(function(b){
+    if (n > 0) { b.textContent = n; } else { b.remove(); }
+  });
+})();
+</script>
+
+</body>
+</html>
